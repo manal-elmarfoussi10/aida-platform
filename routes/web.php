@@ -3,9 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ZoneController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 
@@ -21,5 +22,10 @@ Route::middleware(['auth', 'role:User'])->get('/user', [DashboardController::cla
 Route::get('/dashboard', function () {
     return redirect(\App\Providers\RouteServiceProvider::redirectTo());
 })->middleware('auth')->name('dashboard');
+
+//route for zone
+Route::middleware(['auth'])->group(function () {
+    Route::resource('zones', ZoneController::class);
+});
 
 require __DIR__.'/auth.php';
