@@ -72,4 +72,5 @@ class DeviceController extends Controller
       $device->save();
       return response()->json(['manual' => $device->manual_control]);
   }
+  
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\Api\ScheduleApiController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -42,8 +43,13 @@ Route::post('/devices/{device}/toggle-status', [DeviceController::class, 'toggle
 Route::post('/devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual']);
 
 //shedule
-Route::resource('schedules', ScheduleController::class);
-Route::get('/calendar', [ScheduleController::class, 'calendar'])->name('schedules.calendar');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/schedules/events', [ScheduleController::class, 'events'])->name('schedules.events');
+    Route::get('/schedules/create', [ScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
+});
 
 
 require __DIR__.'/auth.php';

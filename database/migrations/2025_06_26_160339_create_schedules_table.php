@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('device_id')->constrained()->onDelete('cascade');
-            $table->string('action'); // e.g., "on", "off"
-            $table->time('scheduled_time');
-            $table->string('day')->nullable(); // optional: Mon, Tue, etc.
+            $table->string('action');
+            $table->dateTime('scheduled_time'); // full date + time
             $table->timestamps();
         });
     }
