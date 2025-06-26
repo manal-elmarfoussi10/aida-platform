@@ -28,6 +28,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('zones', ZoneController::class);
 });
+Route::post('/zones/{zone}/toggle-control', [ZoneController::class, 'toggleControl']);
 
 //device
 Route::middleware(['auth'])->group(function () {
