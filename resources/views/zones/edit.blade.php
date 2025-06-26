@@ -26,7 +26,7 @@
             </select>
         </div>
         <div class="mb-4">
-            <label>Maintenance Alert test</label>
+            <label>Maintenance Alert</label>
             <input type="checkbox" name="maintenance_alert" {{ $zone->maintenance_alert ? 'checked' : '' }}>
         </div>
         <div class="mb-4">
