@@ -7,7 +7,7 @@
     <!-- Header + Search -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h2 class="text-2xl font-bold mb-1">Hello {{ Auth::user()->name }},</h2>
+            <h2 class="text-2xl font-bold mb-1">Hello admin {{ Auth::user()->name }},</h2>
             <p class="text-green-400">Attendance Insights</p>
         </div>
         <div class="relative w-64">
