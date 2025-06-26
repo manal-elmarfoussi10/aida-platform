@@ -20,7 +20,6 @@
     <div class="flex flex-col flex-1 overflow-hidden">
         @include('layouts.partials.header')
 
-<<<<<<< HEAD
         <main class="p-6 overflow-y-auto bg-[#1a1a1a] flex-1">
             @yield('content')
         </main>
@@ -37,13 +36,4 @@
     @stack('scripts')
     @yield('scripts')
 </body>
-=======
-            <!-- Page Content -->
-            <main>
-                @yield('content')
-            </main>
-        </div>
-    </body>
->>>>>>> f8048c836de5cc47cf53562e7a29df4e373f1133
 </html>
-
