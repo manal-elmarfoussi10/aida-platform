@@ -3,9 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ZoneController;
+use App\Http\Controllers\DeviceController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 
@@ -22,5 +24,17 @@ Route::get('/dashboard', function () {
     return redirect(\App\Providers\RouteServiceProvider::redirectTo());
 })->middleware('auth')->name('dashboard');
 
+//route for zone
+Route::middleware(['auth'])->group(function () {
+    Route::resource('zones', ZoneController::class);
+});
+
+//device
+Route::middleware(['auth'])->group(function () {
+    Route::resource('devices', DeviceController::class);
+
+    Route::post('devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus'])->name('devices.toggleStatus');
+    Route::post('devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual'])->name('devices.toggleManual');
+});
 require __DIR__.'/auth.php';
 
