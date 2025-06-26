@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use Illuminate\Http\Request;
+use App\Models\Zone;
 
 class DeviceController extends Controller
 {
@@ -15,23 +16,37 @@ class DeviceController extends Controller
 
     public function create()
     {
-        return view('devices.create');
+        $zones = Zone::all(); // Fetch all zones
+    return view('devices.create', compact('zones'));
     }
 
     public function store(Request $request)
-    {
-        Device::create($request->all());
-        return redirect()->route('devices.index');
-    }
+{
+    $data = $request->all();
+
+    $data['current_status'] = $request->has('current_status') ? 1 : 0;
+    $data['manual_control'] = $request->has('manual_control') ? 1 : 0;
+
+    Device::create($data);
+
+    return redirect()->route('devices.index');
+}
 
     public function edit(Device $device)
     {
-        return view('devices.edit', compact('device'));
+        $zones = Zone::all(); // Fetch all zones
+    return view('devices.edit', compact('device', 'zones'));
     }
 
     public function update(Request $request, Device $device)
     {
-        $device->update($request->all());
+        $data = $request->all();
+    
+        $data['current_status'] = $request->has('current_status') ? 1 : 0;
+        $data['manual_control'] = $request->has('manual_control') ? 1 : 0;
+    
+        $device->update($data);
+    
         return redirect()->route('devices.index');
     }
 
@@ -41,17 +56,20 @@ class DeviceController extends Controller
         return redirect()->route('devices.index');
     }
 
-    public function toggleStatus(Device $device)
-    {
-        $device->current_status = !$device->current_status;
-        $device->save();
-        return response()->json(['status' => $device->current_status]);
-    }
 
-    public function toggleManual(Device $device)
-    {
-        $device->manual_control = !$device->manual_control;
-        $device->save();
-        return response()->json(['manual' => $device->manual_control]);
-    }
+  // DeviceController.php
+
+  public function toggleStatus(Device $device)
+  {
+      $device->current_status = !$device->current_status;
+      $device->save();
+      return response()->json(['status' => $device->current_status]);
+  }
+  
+  public function toggleManual(Device $device)
+  {
+      $device->manual_control = !$device->manual_control;
+      $device->save();
+      return response()->json(['manual' => $device->manual_control]);
+  }
 }

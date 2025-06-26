@@ -9,9 +9,13 @@
 
         <div>
             <label class="block text-sm mb-1 font-semibold">Zone</label>
-            <input type="text" name="zone" required
-                   class="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-green-400"
-                   placeholder="Zone name or ID">
+            <select name="zone" required
+                    class="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+                <option value="" disabled selected>Select a zone</option>
+                @foreach($zones as $zone)
+                    <option value="{{ $zone->name }}">{{ $zone->name }}</option>
+                @endforeach
+            </select>
         </div>
 
         <div>

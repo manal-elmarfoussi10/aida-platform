@@ -10,10 +10,16 @@
 
         <div>
             <label class="block text-sm mb-1 font-semibold">Zone</label>
-            <input type="text" name="zone" value="{{ $device->zone }}"
-                   class="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-green-400" required>
+            <select name="zone" required
+                    class="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+                <option value="" disabled>Select a zone</option>
+                @foreach($zones as $zone)
+                    <option value="{{ $zone->name }}" {{ $device->zone == $zone->name ? 'selected' : '' }}>
+                        {{ $zone->name }}
+                    </option>
+                @endforeach
+            </select>
         </div>
-
         <div>
             <label class="block text-sm mb-1 font-semibold">Device Type</label>
             <input type="text" name="device_type" value="{{ $device->device_type }}"

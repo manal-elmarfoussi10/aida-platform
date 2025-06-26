@@ -37,5 +37,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus'])->name('devices.toggleStatus');
     Route::post('devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual'])->name('devices.toggleManual');
 });
+Route::post('/devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus']);
+Route::post('/devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual']);
+
+
 require __DIR__.'/auth.php';
 
