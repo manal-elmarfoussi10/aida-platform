@@ -12,7 +12,7 @@
     <div class="p-6">
         <!-- Logo -->
         <div class="flex items-center justify-center mb-6">
-           <img src="{{ asset('images/logo aida.png') }}" alt="Aida Logo" class="h-28 max-w-[160px] mx-auto">
+           <img src="{{ asset('images/logo aida.png') }}" alt="Aida-Logo" class="h-28 max-w-[160px] mx-auto">
 
         </div>
 
