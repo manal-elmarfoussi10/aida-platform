@@ -6,9 +6,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ScheduleController;
+<<<<<<< HEAD
 use App\Http\Controllers\FloorplanController;
 use App\Http\Controllers\RoomController;
 
+=======
+use App\Http\Controllers\Api\ScheduleApiController;
+>>>>>>> fb03da4c0adf31e16b304dcfd41132324ef9de3e
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -45,8 +49,13 @@ Route::post('/devices/{device}/toggle-status', [DeviceController::class, 'toggle
 Route::post('/devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual']);
 
 //shedule
-Route::resource('schedules', ScheduleController::class);
-Route::get('/calendar', [ScheduleController::class, 'calendar'])->name('schedules.calendar');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/schedules/events', [ScheduleController::class, 'events'])->name('schedules.events');
+    Route::get('/schedules/create', [ScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
+});
 
 
 Route::middleware(['auth'])->group(function () {

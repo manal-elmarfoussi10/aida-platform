@@ -9,7 +9,11 @@ class Schedule extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['device_id', 'action', 'scheduled_at'];
+    protected $fillable = [
+        'device_id',
+        'action',
+        'scheduled_time',
+    ];
 
     public function device()
     {
