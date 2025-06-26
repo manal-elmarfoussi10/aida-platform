@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+    @livewireStyles
+
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Aida')</title>
@@ -10,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+@livewireScripts
 
 <body class="bg-[#0f0f0f] text-white flex h-screen">
 

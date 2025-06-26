@@ -6,6 +6,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\FloorplanController;
+use App\Http\Controllers\RoomController;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -44,6 +47,15 @@ Route::post('/devices/{device}/toggle-manual', [DeviceController::class, 'toggle
 //shedule
 Route::resource('schedules', ScheduleController::class);
 Route::get('/calendar', [ScheduleController::class, 'calendar'])->name('schedules.calendar');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/floorplan', [RoomController::class, 'index'])->name('floorplan');
+    Route::get('/floorplan/create', [RoomController::class, 'create'])->name('floorplan.create');
+    Route::post('/floorplan/store', [RoomController::class, 'store'])->name('floorplan.store');
+    Route::post('/floorplan/{room}/toggle-light', [RoomController::class, 'toggleLight'])->name('floorplan.toggleLight');
+    Route::post('/floorplan/{room}/toggle-shade', [RoomController::class, 'toggleShade'])->name('floorplan.toggleShade');
+});
 
 
 require __DIR__.'/auth.php';
