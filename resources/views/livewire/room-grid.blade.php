@@ -76,7 +76,7 @@
                 <form method="POST" action="{{ route('floorplan.toggleShade', $room) }}" class="w-1/2">
                     @csrf
                     <button
-                        class="w-full px-3 py-2 text-white rounded-md bg-black hover:bg-gray-900 transition">Toggle Shade</button>
+                        class="w-full px-3 py-2 text-white rounded-md bg-black hover:bg-gray-900 transition">Toggle Shade.</button>
                 </form>
             </div>
         </div>
