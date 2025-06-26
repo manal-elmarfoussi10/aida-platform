@@ -56,4 +56,14 @@ class ZoneController extends Controller
         $zone->delete();
         return redirect()->route('zones.index')->with('success', 'Zone deleted successfully.');
     }
+    public function toggleControl(Request $request, Zone $zone)
+{
+    $zone->device_control_status = $request->input('status');
+    $zone->save();
+
+    return response()->json([
+        'success' => true,
+        'newStatus' => $zone->device_control_status,
+    ]);
+}
 }
