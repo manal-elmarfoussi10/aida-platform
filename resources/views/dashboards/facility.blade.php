@@ -1,57 +1,71 @@
 @extends('layouts.app')
 
-@section('title', 'Facility Overview')
+@section('title', 'Facility Manager')
 
 @section('content')
-<div class="p-6 space-y-6 text-white">
+<div class="p-6 text-white flex flex-col gap-6">
 
     <!-- Header -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-3xl font-bold">Centre de Supervision</h1>
-            <p class="text-gray-400">Suivi temps réel de l’état des zones et des équipements</p>
+            <h1 class="text-3xl font-bold">Bienvenue, {{ Auth::user()->name }}</h1>
+            <p class="text-gray-400">Vue d’ensemble de vos zones et consommations</p>
         </div>
-        <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2">
-            <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Rafraîchir
-        </button>
-    </div>
-
-    <!-- Zones + System Status -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <x-kpi-box icon="layers" label="Zones Opérationnelles" value="12" />
-        <x-kpi-box icon="activity" label="Équipements Actifs" value="47" />
-        <x-kpi-box icon="zap-off" label="Pannes Signalées" value="3" type="error" />
-        <x-kpi-box icon="battery-charging" label="Économie Énergétique" value="18%" type="success" />
-    </div>
-
-    <!-- Graphique principal -->
-    <div class="bg-[#1e1e1e] p-6 rounded-lg shadow-lg">
-        <div class="flex justify-between mb-4">
-            <h2 class="text-xl font-semibold">Consommation Électrique par Zone</h2>
-            <span class="text-sm text-gray-500">Dernière mise à jour : {{ now()->format('H:i') }}</span>
+        <div class="w-full md:w-72 relative">
+            <input type="text" placeholder="Recherche rapide..."
+                   class="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1a1a1a] text-sm text-white placeholder-gray-400 border border-gray-700 focus:ring-2 focus:ring-green-500">
+            <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"></i>
         </div>
-        <canvas id="zoneEnergyChart" height="140"></canvas>
     </div>
 
-    <!-- Alertes et Maintenance -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @php
+            $kpis = [
+                ['label' => 'Zones Actives', 'value' => '08', 'icon' => 'layout-grid'],
+                ['label' => 'Événements Critiques', 'value' => '04', 'icon' => 'alert-circle', 'color' => 'text-red-500'],
+                ['label' => 'Consommation Moyenne', 'value' => '725 KWH', 'icon' => 'zap'],
+                ['label' => 'Maintenance Planifiée', 'value' => '2 interventions', 'icon' => 'calendar']
+            ];
+        @endphp
+        @foreach($kpis as $kpi)
+            <div class="bg-[#1f1f1f] p-5 rounded-lg flex justify-between items-center shadow-sm">
+                <div>
+                    <p class="text-sm text-gray-400">{{ $kpi['label'] }}</p>
+                    <h3 class="text-2xl font-semibold mt-1">{{ $kpi['value'] }}</h3>
+                </div>
+                <i data-lucide="{{ $kpi['icon'] }}" class="w-6 h-6 {{ $kpi['color'] ?? 'text-green-400' }}"></i>
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Graphique + Alertes -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Chart -->
+        <div class="col-span-2 bg-[#1f1f1f] p-6 rounded-lg shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold">Consommation par Zone</h2>
+                <span class="text-sm text-gray-400">Mis à jour : {{ now()->format('d M Y') }}</span>
+            </div>
+            <canvas id="zoneChart" height="200"></canvas>
+        </div>
+
         <!-- Alertes -->
-        <div class="bg-[#1e1e1e] p-6 rounded-lg">
-            <h3 class="text-lg font-semibold mb-3">Alertes Critiques</h3>
-            <ul class="space-y-3 text-sm text-red-400">
-                <li><i data-lucide="alert-triangle" class="inline w-4 h-4 mr-1"></i> Zone B : température anormale</li>
-                <li><i data-lucide="cpu" class="inline w-4 h-4 mr-1"></i> HVAC Zone D : surconsommation détectée</li>
-                <li><i data-lucide="wifi-off" class="inline w-4 h-4 mr-1"></i> Capteur CO₂ déconnecté - Zone A</li>
-            </ul>
-        </div>
-
-        <!-- Prochaines Interventions -->
-        <div class="bg-[#1e1e1e] p-6 rounded-lg">
-            <h3 class="text-lg font-semibold mb-3">Maintenance Planifiée</h3>
-            <ul class="space-y-3 text-sm text-gray-300">
-                <li>🔧 <strong>3 Juil</strong> – Mise à jour firmware HVAC - Zone C</li>
-                <li>🧰 <strong>6 Juil</strong> – Inspection manuelle capteurs lumière</li>
-                <li>📶 <strong>9 Juil</strong> – Calibration réseau ZigBee</li>
+        <div class="bg-[#1f1f1f] p-6 rounded-lg shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">Alertes Récentes</h2>
+            <ul class="space-y-4 text-sm text-gray-300">
+                <li class="flex gap-3">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
+                    Zone B – Perte de signal capteur CO₂
+                </li>
+                <li class="flex gap-3">
+                    <i data-lucide="thermometer" class="w-5 h-5 text-yellow-400"></i>
+                    Zone C – Température élevée détectée
+                </li>
+                <li class="flex gap-3">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                    Zone A – Maintenance complétée
+                </li>
             </ul>
         </div>
     </div>
@@ -64,22 +78,24 @@
 <script>
     lucide.createIcons();
 
-    const ctx = document.getElementById('zoneEnergyChart').getContext('2d');
+    const ctx = document.getElementById('zoneChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Zone A', 'Zone B', 'Zone C', 'Zone D'],
             datasets: [{
-                data: [230, 180, 160, 200],
+                label: 'KWH',
+                data: [250, 200, 190, 220],
                 backgroundColor: ['#10b981', '#3b3b3b', '#3b3b3b', '#3b3b3b'],
-                borderRadius: 8
+                borderRadius: 6
             }]
         },
         options: {
+            responsive: true,
             plugins: { legend: { display: false } },
             scales: {
-                y: { ticks: { color: '#999' }, grid: { color: '#2e2e2e' } },
-                x: { ticks: { color: '#ccc' }, grid: { display: false } }
+                y: { ticks: { color: '#999' }, grid: { color: '#333' } },
+                x: { ticks: { color: '#aaa' }, grid: { display: false } }
             }
         }
     });
