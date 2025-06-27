@@ -14,4 +14,5 @@ class Zone extends Model
         'maintenance_alert',
         'device_control_status',
     ];
+    
 }

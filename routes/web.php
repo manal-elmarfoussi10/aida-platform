@@ -9,6 +9,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\FloorplanController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Api\ScheduleApiController;
+use App\Http\Controllers\ConfigurationController;
 
 // Redirection page d'accueil
 Route::get('/', function () {
@@ -61,6 +62,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/floorplan/store', [RoomController::class, 'store'])->name('floorplan.store');
     Route::post('/floorplan/{room}/toggle-light', [RoomController::class, 'toggleLight'])->name('floorplan.toggleLight');
     Route::post('/floorplan/{room}/toggle-shade', [RoomController::class, 'toggleShade'])->name('floorplan.toggleShade');
+
+    Route::middleware(['auth'])->group(function () {
+    Route::resource('configurations', ConfigurationController::class);
+});
+
 });
 
 // Auth routes
