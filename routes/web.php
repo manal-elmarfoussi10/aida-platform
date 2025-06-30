@@ -10,6 +10,7 @@ use App\Http\Controllers\FloorplanController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Api\ScheduleApiController;
 use App\Http\Controllers\ConfigurationController;
+use App\Http\Controllers\ZoneMappingController;
 
 // Redirection page d'accueil
 Route::get('/', function () {
@@ -65,6 +66,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['auth'])->group(function () {
     Route::resource('configurations', ConfigurationController::class);
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/zone-mapping', [ZoneMappingController::class, 'index'])->name('map-zones.index');
+Route::post('/zone-mapping/update', [ZoneMappingController::class, 'update'])->name('map-zones.update');
+Route::get('/zone-mapping/export', [ZoneMappingController::class, 'export'])->name('map-zones.export');
+
 });
 
 });
