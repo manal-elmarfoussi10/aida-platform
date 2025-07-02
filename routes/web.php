@@ -9,6 +9,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\FloorplanController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Api\ScheduleApiController;
+use App\Http\Controllers\ZoneV2Controller;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ZoneMappingController;
 
@@ -35,10 +36,22 @@ Route::get('/dashboard', function () {
 })->middleware('auth')->name('dashboard');
 
 // Zones
-Route::middleware(['auth'])->group(function () {
-    Route::resource('zones', ZoneController::class);
-    Route::post('/zones/{zone}/toggle-control', [ZoneController::class, 'toggleControl']);
+// oute::middleware(['auth'])->group(function () {
+ //   Route::resource('zones', ZoneController::class);
+ //   Route::post('/zones/{zone}/toggle-control', [ZoneController::class, 'toggleControl']);
+// });
+
+//zone version 2
+Route::prefix('zones-v2')->name('zones-v2.')->group(function () {
+    Route::get('/', [ZoneV2Controller::class, 'index'])->name('index');
+    Route::get('/create', [ZoneV2Controller::class, 'create'])->name('create');
+    Route::post('/', [ZoneV2Controller::class, 'store'])->name('store');
+    Route::get('/{zone}/edit', [ZoneV2Controller::class, 'edit'])->name('edit');
+    Route::put('/{zone}', [ZoneV2Controller::class, 'update'])->name('update');
+    Route::delete('/{zone}', [ZoneV2Controller::class, 'destroy'])->name('destroy');
+    Route::post('/{zone}/toggle', [ZoneV2Controller::class, 'toggleStatus'])->name('toggle');
 });
+
 
 // Devices
 Route::middleware(['auth'])->group(function () {
