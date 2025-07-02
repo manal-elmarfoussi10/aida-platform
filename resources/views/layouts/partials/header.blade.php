@@ -1,4 +1,5 @@
 <header class="bg-[#141414] p-4 flex justify-between items-center border-b border-gray-700">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="text-lg font-semibold">Hello, {{ Auth::user()->name ?? 'User' }}</div>
 
     <div>

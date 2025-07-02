@@ -9,12 +9,9 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\FloorplanController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Api\ScheduleApiController;
-<<<<<<< HEAD
 use App\Http\Controllers\ZoneV2Controller;
-=======
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ZoneMappingController;
->>>>>>> a2da48db0b15446fa768bd496e743c7600a2f979
 
 // Redirection page d'accueil
 Route::get('/', function () {
@@ -52,9 +49,8 @@ Route::prefix('zones-v2')->name('zones-v2.')->group(function () {
     Route::get('/{zone}/edit', [ZoneV2Controller::class, 'edit'])->name('edit');
     Route::put('/{zone}', [ZoneV2Controller::class, 'update'])->name('update');
     Route::delete('/{zone}', [ZoneV2Controller::class, 'destroy'])->name('destroy');
-    Route::post('/zones-v2/{zone}/toggle', [ZoneController::class, 'toggle'])->name('zones-v2.toggle');
+    Route::post('/{zone}/toggle', [ZoneV2Controller::class, 'toggleStatus'])->name('toggle');
 });
-
 
 
 // Devices

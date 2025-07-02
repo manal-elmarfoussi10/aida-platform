@@ -93,7 +93,7 @@
             const newStatus = currentStatus === 1 ? 0 : 1;
             const btn = this;
 
-            fetch(`/zones/${zoneId}/toggle-control`, {
+            fetch(`{{ route('zones-v2.toggle', ':id') }}`.replace(':id', zoneId),  {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',

@@ -66,12 +66,11 @@ class ZoneV2Controller extends Controller
         $zone->delete();
         return back()->with('success', 'Zone deleted.');
     }
-    public function toggle(Request $request, $id)
+    public function toggleStatus(Request $request, Zone $zone)
     {
-        $zone = Zone::findOrFail($id);
-        $zone->status = $request->input('status') ? true : false;
+        $zone->status = $request->status;
         $zone->save();
     
-        return response()->json(['success' => true, 'status' => $zone->status]);
+        return response()->json(['message' => 'Status updated']);
     }
 }
