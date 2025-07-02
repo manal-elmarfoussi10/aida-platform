@@ -9,7 +9,12 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\FloorplanController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Api\ScheduleApiController;
+<<<<<<< HEAD
 use App\Http\Controllers\ZoneV2Controller;
+=======
+use App\Http\Controllers\ConfigurationController;
+use App\Http\Controllers\ZoneMappingController;
+>>>>>>> a2da48db0b15446fa768bd496e743c7600a2f979
 
 // Redirection page d'accueil
 Route::get('/', function () {
@@ -75,6 +80,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/floorplan/store', [RoomController::class, 'store'])->name('floorplan.store');
     Route::post('/floorplan/{room}/toggle-light', [RoomController::class, 'toggleLight'])->name('floorplan.toggleLight');
     Route::post('/floorplan/{room}/toggle-shade', [RoomController::class, 'toggleShade'])->name('floorplan.toggleShade');
+
+    Route::middleware(['auth'])->group(function () {
+    Route::resource('configurations', ConfigurationController::class);
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/zone-mapping', [ZoneMappingController::class, 'index'])->name('map-zones.index');
+Route::post('/zone-mapping/update', [ZoneMappingController::class, 'update'])->name('map-zones.update');
+Route::get('/zone-mapping/export', [ZoneMappingController::class, 'export'])->name('map-zones.export');
+
+});
+
 });
 
 // Auth routes

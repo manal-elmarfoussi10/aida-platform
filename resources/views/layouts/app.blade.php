@@ -11,6 +11,8 @@
     <!-- Chart.js + Icons -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
+
 </head>
 @livewireScripts
 
