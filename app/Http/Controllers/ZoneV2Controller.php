@@ -77,4 +77,30 @@ class ZoneV2Controller extends Controller
             'status' => $zone->status
         ]);
     }
+
+    //IMPORT
+    public function import(Request $request)
+{
+    $request->validate([
+        'csv_file' => 'required|mimes:csv,txt'
+    ]);
+
+    $file = $request->file('csv_file');
+    $data = array_map('str_getcsv', file($file));
+
+    foreach ($data as $index => $row) {
+        if ($index === 0) continue; // Skip header
+
+        ZoneV2::create([
+            'name' => $row[0] ?? null,
+            'zone_type' => $row[1] ?? null,
+            'status' => isset($row[2]) ? (bool) $row[2] : false,
+            'occupancy' => $row[3] ?? null,
+            'temperature_humidity' => $row[4] ?? null,
+            'energy_usage' => $row[5] ?? null,
+        ]);
+    }
+
+    return redirect()->route('zones-v2.index')->with('success', 'Zones imported successfully.');
+}
 }

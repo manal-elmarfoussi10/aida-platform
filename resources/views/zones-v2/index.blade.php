@@ -3,12 +3,33 @@
 
 @section('content')
 <div class="p-6 text-white">
+    {{-- Flash Message --}}
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-600 text-black rounded shadow">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Header + Buttons --}}
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold tracking-wide">Zones List</h2>
-        <a href="{{ route('zones-v2.create') }}"
-           class="bg-green-500 text-black px-5 py-2 rounded hover:bg-green-400 shadow-lg transition-all">
-            Add New Zone
-        </a>
+
+        <div class="flex gap-4">
+            <a href="{{ route('zones-v2.create') }}"
+               class="bg-green-500 text-black px-5 py-2 rounded hover:bg-green-400 shadow-lg transition-all">
+                Add New Zone
+            </a>
+
+            <form action="{{ route('zones-v2.import') }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
+                @csrf
+                <input type="file" name="csv_file" required
+                       class="text-sm text-white file:bg-green-500 file:text-black file:px-4 file:py-1 file:rounded file:shadow-sm" />
+                <button type="submit"
+                        class="bg-green-600 text-black px-4 py-2 rounded hover:bg-green-400 shadow-lg transition-all">
+                    Upload CSV
+                </button>
+            </form>
+        </div>
     </div>
 
     {{-- Search Bar --}}

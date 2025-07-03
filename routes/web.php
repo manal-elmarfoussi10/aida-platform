@@ -51,6 +51,7 @@ Route::prefix('zones-v2')->name('zones-v2.')->group(function () {
     Route::delete('/{zone}', [ZoneV2Controller::class, 'destroy'])->name('destroy');
     Route::post('/{zone}/toggle', [ZoneV2Controller::class, 'toggleStatus'])->name('toggle');
     Route::post('/zones-v2/{zone}/toggle', [ZoneV2Controller::class, 'toggle'])->name('zones-v2.toggle');
+    Route::post('/import', [ZoneV2Controller::class, 'import'])->name('import');
 });
 
 
@@ -59,6 +60,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('devices', DeviceController::class);
     Route::post('devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus'])->name('devices.toggleStatus');
     Route::post('devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual'])->name('devices.toggleManual');
+    Route::post('/devices/import', [DeviceController::class, 'import'])->name('devices.import');
+
 });
 
 // Schedules
