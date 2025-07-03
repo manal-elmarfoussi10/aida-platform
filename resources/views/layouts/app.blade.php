@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
+    @livewireStyles
 
 </head>
 @livewireScripts
@@ -41,5 +42,7 @@
     <!-- Scripts from specific pages -->
     @stack('scripts')
     @yield('scripts')
+    @stack('scripts')
+    @livewireScripts
 </body>
 </html>

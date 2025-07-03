@@ -50,6 +50,7 @@ Route::prefix('zones-v2')->name('zones-v2.')->group(function () {
     Route::put('/{zone}', [ZoneV2Controller::class, 'update'])->name('update');
     Route::delete('/{zone}', [ZoneV2Controller::class, 'destroy'])->name('destroy');
     Route::post('/{zone}/toggle', [ZoneV2Controller::class, 'toggleStatus'])->name('toggle');
+    Route::post('/zones-v2/{zone}/toggle', [ZoneV2Controller::class, 'toggle'])->name('zones-v2.toggle');
 });
 
 
