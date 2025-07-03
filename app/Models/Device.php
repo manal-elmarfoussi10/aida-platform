@@ -15,5 +15,7 @@ class Device extends Model
     {
         return $this->belongsTo(Zone::class);
     }
+    protected $fillable = ['device_name', 'device_type', 'zone_id', 'value', 'current_status'];
+
 }
 
