@@ -12,17 +12,14 @@ use App\Http\Controllers\Api\ScheduleApiController;
 use App\Http\Controllers\ZoneV2Controller;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ZoneMappingController;
-<<<<<<< HEAD
 use App\Http\Controllers\ControlController;
 use App\Http\Livewire\ControlToggle;
-=======
 use App\Http\Controllers\AssistantController;
 
 
 
 
 
->>>>>>> ad80d21dd059a0414a06e5ebc84d1d6e0b917348
 
 // Redirection page d'accueil
 Route::get('/', function () {
