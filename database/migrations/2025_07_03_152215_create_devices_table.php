@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('devices', function (Blueprint $table) {
             $table->id();
-            $table->string('zone');
+            $table->foreignId('zone_id')->constrained('zones_v2')->onDelete('cascade');
             $table->string('device_type');
             $table->string('device_name');
-            $table->boolean('current_status')->default(false);
-            $table->boolean('manual_control')->default(false);
+            $table->boolean('current_status')->default(0);
+            $table->boolean('manual_control')->default(0);
+            $table->timestamp('last_active')->nullable();
             $table->timestamps();
         });
     }

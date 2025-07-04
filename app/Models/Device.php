@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
-    protected $casts = [
-        'zones' => 'array',
+    use HasFactory;
+
+    protected $fillable = [
+        'zone_id', 'device_type', 'device_name', 'current_status', 'manual_control', 'last_active',
     ];
 
-    // Relation : chaque device appartient à une zone
     public function zone()
     {
-        return $this->belongsTo(Zone::class);
+        return $this->belongsTo(ZoneV2::class, 'zone_id');
     }
-    protected $fillable = ['device_name', 'device_type', 'zone_id', 'value', 'current_status'];
-
 }
-

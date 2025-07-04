@@ -19,4 +19,8 @@ class ZoneV2 extends Model
         'temperature_humidity',
         'energy_usage',
     ];
+    public function devices()
+{
+    return $this->hasMany(Device::class, 'zone_id');
+}
 }
