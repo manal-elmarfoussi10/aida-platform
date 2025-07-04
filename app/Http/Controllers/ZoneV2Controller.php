@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ZoneV2;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ZoneV2Controller extends Controller
 {
@@ -102,5 +103,45 @@ class ZoneV2Controller extends Controller
     }
 
     return redirect()->route('zones-v2.index')->with('success', 'Zones imported successfully.');
+}
+public function sendMessage(Request $request)
+{
+    $user = Auth::user();
+    abort_unless($user, 403);
+
+    $prompt = $request->input('prompt', '');
+    $text = 'No response from AI.';
+
+    // Step 1: Check for a custom command
+    if (Str::contains(strtolower($prompt), 'how many zones')) {
+        $zoneCount = \App\Models\ZoneV2::count();
+        $text = "There are $zoneCount zones in the system.";
+    } else {
+        try {
+            $openAiResponse = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a smart building assistant.'],
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'temperature' => 0.7,
+            ]);
+
+            $text = $openAiResponse->json('choices.0.message.content') ?? 'No response from AI.';
+        } catch (\Exception $e) {
+            $text = '⚠️ API Error: ' . $e->getMessage();
+            Log::error('OpenAI API call failed', ['error' => $e->getMessage()]);
+        }
+    }
+
+    AiRequest::create([
+        'user_id' => $user->id,
+        'message' => $prompt,
+        'response' => $text,
+    ]);
+
+    broadcast(new AiResponded($text))->toOthers();
+
+    return response()->json(['response' => $text]);
 }
 }
