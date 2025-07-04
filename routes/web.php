@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\ScheduleApiController;
 use App\Http\Controllers\ZoneV2Controller;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ZoneMappingController;
+use App\Http\Controllers\ControlController;
+use App\Http\Livewire\ControlToggle;
 use App\Http\Controllers\AssistantController;
 
 
@@ -105,6 +107,14 @@ Route::middleware(['auth'])->group(function () {
 });
 
 });
+
+// controller
+Route::middleware(['auth'])->group(function () {
+    Route::get('/controls', [ControlController::class, 'index'])->name('controls.index');
+Route::get('/controls/{id}', [ControlController::class, 'show'])->name('controls.show');
+Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name('controls.update');
+});
+
 
 // Auth routes
 require __DIR__.'/auth.php';

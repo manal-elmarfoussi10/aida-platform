@@ -9,6 +9,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+<<<<<<< HEAD
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Chart.js + Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
+=======
+>>>>>>> ad80d21dd059a0414a06e5ebc84d1d6e0b917348
     @livewireStyles
 
     <!-- Chart.js + Lucide + Font Awesome -->
