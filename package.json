@@ -26,6 +26,7 @@
         "fullcalendar": "^6.1.17",
         "laravel-echo": "^2.1.6",
         "lucide": "^0.523.0",
+        "openai": "^5.8.2",
         "pusher-js": "^8.4.0"
     }
 }
