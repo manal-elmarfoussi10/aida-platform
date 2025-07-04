@@ -13,7 +13,7 @@ class DeviceController extends Controller
      */
     public function index()
     {
-        $devices = Device::with('zone')->get(); // Ensure zone() relationship is defined
+        $devices = Device::with('zoneV2')->get();// Ensure zone() relationship is defined
         return view('devices.index', compact('devices'));
     }
 

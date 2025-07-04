@@ -10,11 +10,22 @@ class Device extends Model
     use HasFactory;
 
     protected $fillable = [
-        'zone_id', 'device_type', 'device_name', 'current_status', 'manual_control', 'last_active',
+        'zone_id',
+        'device_type',
+        'device_name',
+        'current_status',
+        'manual_control',
+        'last_active',
+        'temperature',
+        'dimmer',
+        'color_temperature',
+        'rgb_color',
+        'shades', 
     ];
 
-    public function zone()
+    public function zoneV2()
     {
         return $this->belongsTo(ZoneV2::class, 'zone_id');
     }
+
 }
