@@ -7,7 +7,7 @@
             <div class="bg-green-500 p-2 rounded-full">
                 <i class="fas fa-robot"></i>
             </div>
-            <span>AI Assistant</span>
+            <span>AI Assistant </span>
         </h2>
 
         <!-- Zone chat -->
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-   
+
 
     <!-- Assistants section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
