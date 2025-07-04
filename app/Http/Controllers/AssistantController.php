@@ -67,7 +67,7 @@ class AssistantController extends Controller
                 'temperature' => 0.7,
             ]);
 
-            $text = $openAiResponse->json('choices.0.message.content') ?? 'No response from AI.';
+            $text = $openAiResponse->json('choices.0.message.content') ?? ' No response from AI.';
 
         } catch (\Exception $e) {
             $text = '⚠️ API Error: ' . $e->getMessage();
