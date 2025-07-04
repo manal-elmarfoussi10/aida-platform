@@ -12,6 +12,12 @@ use App\Http\Controllers\Api\ScheduleApiController;
 use App\Http\Controllers\ZoneV2Controller;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ZoneMappingController;
+use App\Http\Controllers\AssistantController;
+
+
+
+
+
 
 // Redirection page d'accueil
 Route::get('/', function () {
@@ -85,6 +91,13 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/zone-mapping/update', [ZoneMappingController::class, 'update'])->name('map-zones.update');
 Route::get('/zone-mapping/export', [ZoneMappingController::class, 'export'])->name('map-zones.export');
 
+});
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/assistants/chat', [AssistantController::class, 'chatView'])->name('assistants.chat');
+    Route::post('/assistants/send', [AssistantController::class, 'sendMessage'])->name('assistants.send');
 });
 
 });
