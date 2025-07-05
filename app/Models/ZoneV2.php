@@ -23,4 +23,8 @@ class ZoneV2 extends Model
 {
     return $this->hasMany(Device::class, 'zone_id');
 }
+public function configurations()
+{
+    return $this->belongsToMany(\App\Models\Configuration::class, 'configuration_zone', 'zone_id', 'configuration_id');
+}
 }

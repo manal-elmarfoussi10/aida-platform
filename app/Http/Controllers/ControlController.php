@@ -9,6 +9,14 @@ use App\Models\ZoneV2;
 
 class ControlController extends Controller
 {
+
+    public function index()
+    {
+        $devices = Device::all();
+        $device = $devices->first();
+
+        return view('controls.index', compact('devices', 'device'));
+    }
   // ControlController.php
   public function controls($id = null)
   {

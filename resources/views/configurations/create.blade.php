@@ -25,6 +25,20 @@
                     </td>
                 </tr>
 
+                {{-- Zones --}}
+                <tr class="border-b border-gray-700">
+                    <td class="py-4 pr-4 align-top font-semibold">Zones</td>
+                    <td class="py-4">
+                        <select name="zones[]" multiple required
+                                class="w-full bg-[#333333] text-white rounded px-4 py-2 border border-gray-600"
+                                id="zones-select">
+                            @foreach($zones as $zone)
+                                <option value="{{ $zone->id }}">{{ $zone->name }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                </tr>
+
                 {{-- Type --}}
                 <tr class="border-b border-gray-700">
                     <td class="py-4 pr-4 align-top font-semibold">Type</td>
@@ -81,7 +95,17 @@
 
 {{-- Lucide icons --}}
 <script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+
+{{-- TomSelect --}}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 <script>
-    lucide.createIcons();
+    new TomSelect("#zones-select", {
+        plugins: ['remove_button'],
+        placeholder: 'Select one or more zones...',
+        persist: false,
+        create: false
+    });
 </script>
 @endsection

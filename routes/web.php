@@ -104,6 +104,7 @@ Route::get('/zone-mapping/export', [ZoneMappingController::class, 'export'])->na
 Route::middleware(['auth'])->group(function () {
     Route::get('/assistants/chat', [AssistantController::class, 'chatView'])->name('assistants.chat');
     Route::post('/assistants/send', [AssistantController::class, 'sendMessage'])->name('assistants.send');
+
 });
 
 });

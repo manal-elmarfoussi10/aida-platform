@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Configuration;
+use App\Models\ZoneV2;
 use Illuminate\Http\Request;
 
 class ConfigurationController extends Controller
 {
     public function index()
     {
-        // Charger les zones liées
         $configs = Configuration::with('zones')->get();
-
-        // Envoyer à la vue
         return view('configurations.index', compact('configs'));
     }
 
     public function create()
     {
-        // Tu peux récupérer les zones pour un formulaire de sélection
-        $zones = \App\Models\Zone::all();
+        $zones = ZoneV2::all();
         return view('configurations.create', compact('zones'));
     }
 
@@ -29,7 +26,7 @@ class ConfigurationController extends Controller
             'name' => 'required|string',
             'type' => 'required|string',
             'mode' => 'required|string',
-            'zones' => 'array', // facultatif
+            'zones' => 'array',
         ]);
 
         $config = Configuration::create([
@@ -38,7 +35,6 @@ class ConfigurationController extends Controller
             'mode' => $request->mode,
         ]);
 
-        // Associer les zones
         if ($request->zones) {
             $config->zones()->sync($request->zones);
         }
@@ -48,7 +44,7 @@ class ConfigurationController extends Controller
 
     public function edit(Configuration $configuration)
     {
-        $zones = \App\Models\Zone::all();
+        $zones = ZoneV2::all();
         return view('configurations.edit', compact('configuration', 'zones'));
     }
 
@@ -65,6 +61,8 @@ class ConfigurationController extends Controller
 
         if ($request->zones) {
             $configuration->zones()->sync($request->zones);
+        } else {
+            $configuration->zones()->detach();
         }
 
         return redirect()->route('configurations.index')->with('success', 'Configuration updated!');
@@ -72,6 +70,7 @@ class ConfigurationController extends Controller
 
     public function destroy(Configuration $configuration)
     {
+        $configuration->zones()->detach();
         $configuration->delete();
         return redirect()->route('configurations.index')->with('success', 'Configuration deleted!');
     }
