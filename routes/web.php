@@ -15,6 +15,7 @@ use App\Http\Controllers\ZoneMappingController;
 use App\Http\Controllers\ControlController;
 use App\Http\Livewire\ControlToggle;
 use App\Http\Controllers\AssistantController;
+use App\Http\Controllers\API\AutomationController;
 
 
 
@@ -115,6 +116,12 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/controls/{id}', [ControlController::class, 'show'])->name('controls.show');
 Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name('controls.update');
 });
+
+//automation Route::get('/automations/editor', function () {
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/automations', [AutomationController::class, 'editor'])->name('automations');
+    });
+
 
 
 // Auth routes

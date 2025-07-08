@@ -15,7 +15,7 @@
 <aside class="w-64 bg-black text-white h-full flex flex-col">
     <!-- Logo -->
 <div class="pt-6 pb-4 flex justify-center items-center ">
-    <img src="{{ asset('images/LOGOAIDAA.png') }}" alt="Aida Logo" class="h-36 w-auto max-w-[280px] object-contain">
+    <img src="{{ asset('images/LOGOAIDAA.png') }}" alt="Aida Logo" class="h-36 w-auto max-w-[220px] object-contain">
 </div>
 
 
