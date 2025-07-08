@@ -16,7 +16,7 @@ use App\Http\Controllers\ControlController;
 use App\Http\Livewire\ControlToggle;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\API\AutomationController;
-
+use App\Http\Controllers\SettingsController;
 
 
 
@@ -122,6 +122,12 @@ Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name
         Route::get('/automations', [AutomationController::class, 'editor'])->name('automations');
     });
 
+    //settings
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+        Route::post('/settings/update', [SettingsController::class, 'update'])->name('settings.update');
+    });
 
 
 // Auth routes
