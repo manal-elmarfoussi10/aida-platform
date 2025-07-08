@@ -126,7 +126,15 @@ Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-        Route::post('/settings/update', [SettingsController::class, 'update'])->name('settings.update');
+    
+        Route::get('/settings/profile', [SettingsController::class, 'editProfile'])->name('settings.profile');
+        Route::post('/settings/profile', [SettingsController::class, 'updateProfile']);
+    
+        Route::get('/settings/location', [SettingsController::class, 'editLocation'])->name('settings.location');
+        Route::post('/settings/location', [SettingsController::class, 'updateLocation']);
+    
+        Route::get('/settings/language', [SettingsController::class, 'editLanguage'])->name('settings.language');
+        Route::post('/settings/language', [SettingsController::class, 'updateLanguage']);
     });
 
 

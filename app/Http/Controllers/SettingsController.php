@@ -49,4 +49,62 @@ class SettingsController extends Controller
     
         return redirect()->route('settings')->with('success', 'Settings updated successfully.');
     }
+
+    public function editProfile()
+{
+    return view('settings.profile', ['user' => auth()->user()]);
+}
+
+public function updateProfile(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email',
+        'password' => 'nullable|string|min:6',
+    ]);
+
+    $user = auth()->user();
+    $user->name = $request->name;
+    $user->email = $request->email;
+    if ($request->password) {
+        $user->password = Hash::make($request->password);
+    }
+    $user->save();
+
+    return redirect()->route('settings')->with('success', 'Profile updated!');
+}
+
+public function editLocation()
+{
+    return view('settings.location', ['settings' => auth()->user()->settings]);
+}
+
+public function updateLocation(Request $request)
+{
+    $request->validate(['location' => 'required|string']);
+
+    $settings = auth()->user()->settings()->updateOrCreate(
+        ['user_id' => auth()->id()],
+        ['location' => $request->location]
+    );
+
+    return redirect()->route('settings')->with('success', 'Location updated!');
+}
+
+public function editLanguage()
+{
+    return view('settings.language', ['settings' => auth()->user()->settings]);
+}
+
+public function updateLanguage(Request $request)
+{
+    $request->validate(['language' => 'required|string']);
+
+    auth()->user()->settings()->updateOrCreate(
+        ['user_id' => auth()->id()],
+        ['language' => $request->language]
+    );
+
+    return redirect()->route('settings')->with('success', 'Language updated!');
+}
 }
