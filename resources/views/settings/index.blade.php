@@ -27,9 +27,11 @@
             <!-- Location -->
             <a href="{{ route('settings.location') }}" class="flex items-center justify-between hover:bg-gray-700 transition px-3 py-2 rounded-lg">
                 <div class="flex items-center gap-4">
-                    <i data-lucide="globe" class="w-5 h-5"></i>
-                    <div>
-                        <div class="text-sm">Location</div>
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i data-lucide="globe" class="w-5 h-5"></i>
+                    </div>
+                    <div class="leading-tight">
+                        <div class="text-sm font-medium">Location</div>
                         <div class="text-xs text-gray-400">{{ $settings->location ?? 'Not set' }}</div>
                     </div>
                 </div>
@@ -37,10 +39,12 @@
             </a>
 
             <!-- Notifications -->
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between px-3 py-2">
                 <div class="flex items-center gap-4">
-                    <i data-lucide="bell" class="w-5 h-5"></i>
-                    <div class="text-sm">Notifications</div>
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </div>
+                    <div class="text-sm font-medium">Notifications</div>
                 </div>
                 <label class="inline-flex items-center cursor-pointer">
                     <input type="checkbox" class="sr-only peer" {{ $settings->notifications ? 'checked' : '' }}>
@@ -53,9 +57,11 @@
             <!-- Language -->
             <a href="{{ route('settings.language') }}" class="flex items-center justify-between hover:bg-gray-700 transition px-3 py-2 rounded-lg">
                 <div class="flex items-center gap-4">
-                    <i data-lucide="languages" class="w-5 h-5"></i>
-                    <div>
-                        <div class="text-sm">Language</div>
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i data-lucide="languages" class="w-5 h-5"></i>
+                    </div>
+                    <div class="leading-tight">
+                        <div class="text-sm font-medium">Language</div>
                         <div class="text-xs text-gray-400">{{ $settings->language ?? 'EN' }}</div>
                     </div>
                 </div>
@@ -63,19 +69,23 @@
             </a>
 
             <!-- Software Upgrade -->
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between px-3 py-2">
                 <div class="flex items-center gap-4">
-                    <i data-lucide="upload" class="w-5 h-5"></i>
-                    <div class="text-sm">Software upgrade</div>
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i data-lucide="upload" class="w-5 h-5"></i>
+                    </div>
+                    <div class="text-sm font-medium">Software upgrade</div>
                 </div>
                 <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
             </div>
 
             <!-- Dark Mode -->
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between px-3 py-2">
                 <div class="flex items-center gap-4">
-                    <i data-lucide="moon" class="w-5 h-5"></i>
-                    <div class="text-sm">Dark mood</div>
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i data-lucide="moon" class="w-5 h-5"></i>
+                    </div>
+                    <div class="text-sm font-medium">Dark mood</div>
                 </div>
                 <label class="inline-flex items-center cursor-pointer">
                     <input type="checkbox" class="sr-only peer" {{ $settings->dark_mode ? 'checked' : '' }}>
