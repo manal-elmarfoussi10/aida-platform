@@ -1,40 +1,49 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-[#121212] text-white px-6 py-10">
-    <h1 class="text-3xl font-bold mb-6">Reports & Features</h1>
+<div class="min-h-screen bg-[#121212] text-white px-4 py-8">
 
-    <!-- AI Assistant -->
-    <div class="bg-[#2c2c2c] rounded-2xl p-5 mb-10 shadow">
-        <div class="flex items-center mb-4 gap-3">
-            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <i class="fa-solid fa-robot text-black"></i>
+    <!-- Title -->
+    <h1 class="text-2xl font-bold mb-6">Reports & Features</h1>
+
+    <!-- AI Report Assistant Box -->
+    <div class="bg-[rgb(44,44,44)] rounded-2xl p-5 mb-6 shadow space-y-4">
+        <div class="flex items-center gap-3">
+            <div class="bg-green-500 text-black p-2 rounded-full">
+                <i data-lucide="bot" class="w-5 h-5"></i>
             </div>
-            <h2 class="text-xl font-semibold">AI Report Assistant</h2>
+            <div class="font-semibold text-lg">AI Report Assistant</div>
         </div>
 
-        <div class="bg-[#1b1b1b] rounded-xl p-4 text-sm text-green-300 mb-4">
-            Welcome! Ask me about your building’s reports or features.
+        <!-- Welcome bubble -->
+        <div class="bg-green-500 text-black rounded-xl px-4 py-2 text-sm w-fit">
+            Welcome! Ask me about your building's reports or features.
         </div>
 
-        <div class="flex flex-wrap gap-3 mb-4">
-            <button class="px-4 py-1 bg-[#1f1f1f] rounded-full text-sm">Show system health</button>
-            <button class="px-4 py-1 bg-[#1f1f1f] rounded-full text-sm">Summarize security status</button>
-            <button class="px-4 py-1 bg-[#1f1f1f] rounded-full text-sm">List offline features</button>
-            <button class="px-4 py-1 bg-[#1f1f1f] rounded-full text-sm">Show compliance summary</button>
+        <!-- Suggested Actions -->
+        <div class="flex flex-wrap gap-2">
+            @foreach (['Show system health', 'Summarize security status', 'List offline features', 'Show compliance summary'] as $action)
+                <button onclick="document.getElementById('aiInput').value='{{ $action }}'" class="bg-[#2c2c2c] hover:bg-[#3a3a3a] px-4 py-1 rounded-full text-sm">
+                    {{ $action }}
+                </button>
+            @endforeach
         </div>
 
-        <form method="POST" action="{{ route('ai.reports.respond') }}" class="flex items-center bg-[#1f1f1f] rounded-xl">
-            @csrf
-            <input type="text" name="message" placeholder="Ask about reports or features..." class="w-full bg-transparent px-4 py-3 text-sm focus:outline-none" />
-            <button type="submit" class="px-4">
-                <i class="fa-solid fa-paper-plane text-green-500"></i>
+        <!-- Input Box -->
+        <div class="relative">
+            <input type="text" id="aiInput" class="bg-[#1a1a1a] border border-gray-700 w-full px-4 py-2 rounded-xl pr-10 text-sm"
+                   placeholder="Ask about reports or features...">
+            <button id="aiSend" class="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+                <i data-lucide="send" class="w-5 h-5"></i>
             </button>
-        </form>
+        </div>
+
+        <!-- Reply Display -->
+        <div id="aiResponse" class="mt-3 text-sm text-gray-300"></div>
     </div>
 
-    <!-- Feature Cards -->
-    <div class="grid md:grid-cols-3 gap-6">
+     <!-- Feature Cards -->
+     <div class="grid md:grid-cols-3 gap-6">
         <!-- Sample Card -->
         @php
             $features = [
@@ -114,4 +123,31 @@
         @endforeach
     </div>
 </div>
+
+<script>
+    // Load Lucide icons
+    lucide.createIcons();
+
+    // Handle AI Assistant Send
+    document.getElementById('aiSend').addEventListener('click', async function () {
+        const input = document.getElementById('aiInput');
+        const responseBox = document.getElementById('aiResponse');
+
+        if (!input.value.trim()) return;
+
+        responseBox.innerHTML = "Thinking...";
+
+        const res = await fetch("{{ route('ai.reports.respond') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ prompt: input.value })
+        });
+
+        const data = await res.json();
+        responseBox.innerHTML = `<div class="text-green-400 mb-1">AI:</div><div>${data.reply}</div>`;
+    });
+</script>
 @endsection
