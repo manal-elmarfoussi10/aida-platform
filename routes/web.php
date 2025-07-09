@@ -17,7 +17,8 @@ use App\Http\Livewire\ControlToggle;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\API\AutomationController;
 use App\Http\Controllers\SettingsController;
-
+use App\Http\Controllers\AIReportAssistantController;
+use App\Http\Controllers\ReportController;
 
 
 
@@ -136,6 +137,17 @@ Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name
         Route::get('/settings/language', [SettingsController::class, 'editLanguage'])->name('settings.language');
         Route::post('/settings/language', [SettingsController::class, 'updateLanguage']);
     });
+
+//reports
+Route::middleware(['auth'])->group(function () {
+
+    // Reports & AI Assistant
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/ai/reports/respond', [AIReportAssistantController::class, 'respond'])->name('ai.reports.respond');
+
+    // Logout handled by Laravel's built-in auth scaffolding
+});
+
 
 
 // Auth routes
