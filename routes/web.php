@@ -19,7 +19,7 @@ use App\Http\Controllers\API\AutomationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\AIReportAssistantController;
 use App\Http\Controllers\ReportController;
-
+use App\Http\Controllers\NetworkDeviceController;
 
 
 
@@ -127,13 +127,13 @@ Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-    
+
         Route::get('/settings/profile', [SettingsController::class, 'editProfile'])->name('settings.profile');
         Route::post('/settings/profile', [SettingsController::class, 'updateProfile']);
-    
+
         Route::get('/settings/location', [SettingsController::class, 'editLocation'])->name('settings.location');
         Route::post('/settings/location', [SettingsController::class, 'updateLocation']);
-    
+
         Route::get('/settings/language', [SettingsController::class, 'editLanguage'])->name('settings.language');
         Route::post('/settings/language', [SettingsController::class, 'updateLanguage']);
     });
@@ -147,6 +147,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Logout handled by Laravel's built-in auth scaffolding
 });
+//NetworkDevice
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/network-devices', [NetworkDeviceController::class, 'index'])->name('network.index');
+    Route::post('/network-devices/{id}/toggle', [NetworkDeviceController::class, 'toggle'])->name('network.toggle');
+    Route::post('/network/scan', [NetworkDeviceController::class, 'scan'])->name('network.scan');
+});
+
 
 
 
