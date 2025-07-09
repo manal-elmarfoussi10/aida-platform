@@ -19,6 +19,9 @@ use App\Http\Controllers\API\AutomationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\AIReportAssistantController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SiteController;
+use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\FloorController;
 
 
 
@@ -148,6 +151,44 @@ Route::middleware(['auth'])->group(function () {
     // Logout handled by Laravel's built-in auth scaffolding
 });
 
+//sites
+Route::middleware(['auth'])->group(function () {
+
+    // 🔹 SITES
+    Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
+    Route::get('/sites/create', [SiteController::class, 'create'])->name('sites.create');
+    Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
+    Route::get('/sites/{site}', [SiteController::class, 'show'])->name('sites.show');
+
+    
+
+
+
+});
+
+
+//
+//floors
+Route::middleware(['auth'])->group(function () {
+    Route::resource('floors', FloorController::class);
+});
+
+
+//buildings
+Route::middleware(['auth'])->group(function () {
+    Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
+    Route::get('/buildings/create', [BuildingController::class, 'create'])->name('buildings.create');
+    Route::post('/buildings', [BuildingController::class, 'store'])->name('buildings.store');
+    Route::get('/buildings/{building}/edit', [BuildingController::class, 'edit'])->name('buildings.edit');
+    Route::put('/buildings/{building}', [BuildingController::class, 'update'])->name('buildings.update');
+    Route::delete('/buildings/{building}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
+});
+
+
+//hierarchy
+Route::middleware(['auth'])->group(function () {
+    Route::get('/hierarchy', [App\Http\Controllers\HierarchyController::class, 'index'])->name('hierarchy.index');
+});
 
 
 // Auth routes

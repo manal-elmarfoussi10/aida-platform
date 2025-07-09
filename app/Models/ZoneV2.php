@@ -27,4 +27,10 @@ public function configurations()
 {
     return $this->belongsToMany(\App\Models\Configuration::class, 'configuration_zone', 'zone_id', 'configuration_id');
 }
+public function floor()
+{
+    return $this->belongsTo(Floor::class);
+}
+
+
 }
