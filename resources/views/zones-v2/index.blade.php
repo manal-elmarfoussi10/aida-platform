@@ -32,6 +32,39 @@
         </div>
     </div>
 
+    {{-- Filters --}}
+    <form method="GET" action="{{ route('zones-v2.index') }}" class="flex gap-4 mb-6">
+        <select name="site_id" id="site_id" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded"
+                onchange="this.form.submit()">
+            <option value="">-- Select Site --</option>
+            @foreach ($sites as $site)
+                <option value="{{ $site->id }}" {{ $site->id == $selectedSiteId ? 'selected' : '' }}>
+                    {{ $site->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="building_id" id="building_id" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded"
+                onchange="this.form.submit()">
+            <option value="">-- Select Building --</option>
+            @foreach ($buildings as $building)
+                <option value="{{ $building->id }}" {{ $building->id == $selectedBuildingId ? 'selected' : '' }}>
+                    {{ $building->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="floor_id" id="floor_id" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded"
+                onchange="this.form.submit()">
+            <option value="">-- Select Floor --</option>
+            @foreach ($floors as $floor)
+                <option value="{{ $floor->id }}" {{ $floor->id == $selectedFloorId ? 'selected' : '' }}>
+                    {{ $floor->name }}
+                </option>
+            @endforeach
+        </select>
+    </form>
+
     {{-- Search Bar --}}
     <div class="relative w-1/3 mb-6">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">

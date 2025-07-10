@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="p-6 text-white">
+    {{-- Header --}}
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold tracking-wide">Configurations</h2>
         <a href="{{ route('configurations.create') }}"
@@ -11,6 +12,40 @@
         </a>
     </div>
 
+    {{-- Filters --}}
+    <form method="GET" action="{{ route('configurations.index') }}" class="flex gap-4 mb-6">
+        <select name="site_id" id="siteSelect"
+                class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded" onchange="this.form.submit()">
+            <option value="">-- Select Site --</option>
+            @foreach ($sites as $site)
+                <option value="{{ $site->id }}" {{ $site->id == $selectedSiteId ? 'selected' : '' }}>
+                    {{ $site->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="building_id" id="buildingSelect"
+                class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded" onchange="this.form.submit()">
+            <option value="">-- Select Building --</option>
+            @foreach ($buildings as $building)
+                <option value="{{ $building->id }}" {{ $building->id == $selectedBuildingId ? 'selected' : '' }}>
+                    {{ $building->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="floor_id" id="floorSelect"
+                class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded" onchange="this.form.submit()">
+            <option value="">-- Select Floor --</option>
+            @foreach ($floors as $floor)
+                <option value="{{ $floor->id }}" {{ $floor->id == $selectedFloorId ? 'selected' : '' }}>
+                    {{ $floor->name }}
+                </option>
+            @endforeach
+        </select>
+    </form>
+
+    {{-- Search --}}
     <div class="relative w-1/3 mb-6">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
             <i data-lucide="search" class="w-4 h-4"></i>
@@ -19,9 +54,10 @@
                class="h-10 text-sm pl-10 pr-4 py-2 w-full bg-[#333333] text-white border border-gray-600 rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400">
     </div>
 
+    {{-- Table --}}
     <div class="bg-[#1e1e1e] rounded-lg shadow overflow-x-auto">
         <table class="w-full text-sm text-left">
-            <thead class="bg-[#333333] text-whit-300 text-sm font-medium">
+            <thead class="bg-[#333333] text-white text-sm font-medium">
                 <tr>
                     <th class="px-6 py-3">Configuration Name</th>
                     <th class="px-6 py-3">Type</th>
@@ -88,8 +124,11 @@
     </div>
 </div>
 
+@push('scripts')
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
     lucide.createIcons();
 </script>
+@endpush
+
 @endsection

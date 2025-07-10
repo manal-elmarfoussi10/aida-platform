@@ -18,7 +18,9 @@ class ZoneV2 extends Model
         'occupancy',
         'temperature_humidity',
         'energy_usage',
+        'floor_id',
     ];
+
     public function devices()
 {
     return $this->hasMany(Device::class, 'zone_id');
@@ -27,4 +29,10 @@ public function configurations()
 {
     return $this->belongsToMany(\App\Models\Configuration::class, 'configuration_zone', 'zone_id', 'configuration_id');
 }
+public function floor()
+{
+    return $this->belongsTo(Floor::class);
+}
+
+
 }

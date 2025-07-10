@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="p-6 text-white">
+    {{-- Heading and Actions --}}
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold tracking-wide">Devices List</h2>
         <div class="flex gap-4">
@@ -22,14 +23,44 @@
         </div>
     </div>
 
-    {{-- Success Flash Message --}}
+    {{-- Success Flash --}}
     @if (session('success'))
         <div class="mb-4 p-3 bg-green-600 text-black rounded shadow">
             {{ session('success') }}
         </div>
     @endif
 
-    {{-- Search Bar --}}
+    {{-- Filters --}}
+    <form method="GET" action="{{ route('devices.index') }}" class="flex gap-4 mb-6">
+        <select name="site_id" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded" onchange="this.form.submit()">
+            <option value="">-- Select Site --</option>
+            @foreach ($sites as $site)
+                <option value="{{ $site->id }}" {{ $site->id == $selectedSiteId ? 'selected' : '' }}>
+                    {{ $site->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="building_id" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded" onchange="this.form.submit()">
+            <option value="">-- Select Building --</option>
+            @foreach ($buildings as $building)
+                <option value="{{ $building->id }}" {{ $building->id == $selectedBuildingId ? 'selected' : '' }}>
+                    {{ $building->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="floor_id" class="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded" onchange="this.form.submit()">
+            <option value="">-- Select Floor --</option>
+            @foreach ($floors as $floor)
+                <option value="{{ $floor->id }}" {{ $floor->id == $selectedFloorId ? 'selected' : '' }}>
+                    {{ $floor->name }}
+                </option>
+            @endforeach
+        </select>
+    </form>
+
+    {{-- Search --}}
     <div class="relative w-1/3 mb-6">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
             <i data-lucide="search" class="w-4 h-4"></i>
@@ -38,7 +69,7 @@
                class="h-10 text-sm pl-10 pr-4 py-2 w-full bg-gray-800 text-white border border-gray-600 rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400">
     </div>
 
-    {{-- Table --}}
+    {{-- Devices Table --}}
     <div class="bg-[#1e1e1e] rounded-lg shadow overflow-x-auto">
         <table class="w-full text-sm text-left">
             <thead class="bg-[#2a2a2a] text-white">
@@ -59,7 +90,7 @@
                     <td class="px-4 py-3">
                         <livewire:device-toggle :device="$device" :key="$device->id" />
                     </td>
-                    <td class="px-4 py-3">{{ $device->zone->name ?? '-' }}</td>
+                    <td class="px-4 py-3">{{ $device->zoneV2->name ?? '-' }}</td>
                     <td class="px-4 py-3">{{ $device->updated_at->format('Y-m-d H:i') }}</td>
                     <td class="px-4 py-3 text-center flex justify-center gap-3">
                         <a href="{{ route('devices.edit', $device) }}" class="text-green-400 hover:text-green-600">
