@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Site;
 use App\Models\Building;
 use App\Models\Floor;
-use App\Models\Zone;
+use App\Models\ZoneV2;
 use Illuminate\Http\Request;
 
 class HierarchyController extends Controller
@@ -20,7 +20,7 @@ class HierarchyController extends Controller
         $floors = Floor::where('building_id', $selectedBuildingId)->get();
 
         $selectedFloorId = $request->input('floor_id');
-        $zones = $selectedFloorId ? Zone::where('floor_id', $selectedFloorId)->get() : [];
+        $zones = $selectedFloorId ? ZoneV2::where('floor_id', $selectedFloorId)->get() : collect();
 
         return view('hierarchy.index', compact(
             'sites', 'buildings', 'floors', 'zones',

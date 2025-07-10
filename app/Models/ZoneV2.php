@@ -18,7 +18,9 @@ class ZoneV2 extends Model
         'occupancy',
         'temperature_humidity',
         'energy_usage',
+        'floor_id',
     ];
+
     public function devices()
 {
     return $this->hasMany(Device::class, 'zone_id');

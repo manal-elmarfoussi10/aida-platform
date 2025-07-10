@@ -4,17 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\ZoneV2;
+use App\Models\Site;
+use App\Models\Building;
+use App\Models\Floor;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
     /**
-     * Display a listing of the devices.
+     * Display a listing of the devices with optional filtering.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $devices = Device::with('zoneV2')->get();// Ensure zone() relationship is defined
-        return view('devices.index', compact('devices'));
+        $sites = Site::all();
+        $selectedSiteId = $request->input('site_id') ?? $sites->first()?->id;
+
+        $buildings = Building::where('site_id', $selectedSiteId)->get();
+        $selectedBuildingId = $request->input('building_id') ?? $buildings->first()?->id;
+
+        $floors = Floor::where('building_id', $selectedBuildingId)->get();
+        $selectedFloorId = $request->input('floor_id') ?? $floors->first()?->id;
+
+        $devices = Device::with(['zoneV2.floor.building.site'])
+            ->whereHas('zoneV2', function ($query) use ($selectedFloorId) {
+                $query->where('floor_id', $selectedFloorId);
+            })
+            ->get();
+
+        return view('devices.index', compact(
+            'devices',
+            'sites',
+            'buildings',
+            'floors',
+            'selectedSiteId',
+            'selectedBuildingId',
+            'selectedFloorId'
+        ));
     }
 
     /**
@@ -22,8 +47,10 @@ class DeviceController extends Controller
      */
     public function create()
     {
-        $zones = ZoneV2::all();
-        return view('devices.create', compact('zones'));
+        $sites = Site::all();
+        $zones = ZoneV2::all(); // fallback
+
+        return view('devices.create', compact('sites', 'zones'));
     }
 
     /**
@@ -38,12 +65,7 @@ class DeviceController extends Controller
             'current_status'  => 'required|boolean',
         ]);
 
-        Device::create([
-            'device_name'     => $request->device_name,
-            'device_type'     => $request->device_type,
-            'zone_id'         => $request->zone_id,
-            'current_status'  => $request->current_status,
-        ]);
+        Device::create($request->only(['device_name', 'device_type', 'zone_id', 'current_status']));
 
         return redirect()->route('devices.index')->with('success', 'Device created successfully.');
     }
@@ -54,7 +76,9 @@ class DeviceController extends Controller
     public function edit(Device $device)
     {
         $zones = ZoneV2::all();
-        return view('devices.edit', compact('device', 'zones'));
+        $sites = Site::all();
+
+        return view('devices.edit', compact('device', 'zones', 'sites'));
     }
 
     /**
@@ -69,12 +93,7 @@ class DeviceController extends Controller
             'current_status'  => 'required|boolean',
         ]);
 
-        $device->update([
-            'device_name'     => $request->device_name,
-            'device_type'     => $request->device_type,
-            'zone_id'         => $request->zone_id,
-            'current_status'  => $request->current_status,
-        ]);
+        $device->update($request->only(['device_name', 'device_type', 'zone_id', 'current_status']));
 
         return redirect()->route('devices.index')->with('success', 'Device updated successfully.');
     }
@@ -87,44 +106,57 @@ class DeviceController extends Controller
         $device->delete();
         return redirect()->route('devices.index')->with('success', 'Device deleted successfully.');
     }
+
     /**
- * Display the specified device.
- */
-public function import(Request $request)
-{
-    $request->validate([
-        'csv_file' => 'required|mimes:csv,txt|max:2048',
-    ]);
-
-    $file = $request->file('csv_file');
-    $path = $file->getRealPath();
-
-    $header = null;
-    $data = array_map('str_getcsv', file($path));
-
-    if (count($data) < 1) {
-        return back()->withErrors(['csv_file' => 'CSV file is empty.']);
-    }
-
-    $header = array_map('trim', $data[0]);
-    unset($data[0]); // remove header row
-
-    foreach ($data as $row) {
-        $rowData = array_combine($header, $row);
-
-        $zone = ZoneV2::where('name', $rowData['zone'])->first();
-
-        if (!$zone) continue;
-
-        Device::create([
-            'device_name'     => $rowData['device_name'],
-            'device_type'     => $rowData['device_type'],
-            'current_status'  => $rowData['current_status'],
-            'zone_id'         => $zone->id,
+     * Import devices from a CSV file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|mimes:csv,txt|max:2048',
         ]);
+
+        $file = $request->file('csv_file');
+        $data = array_map('str_getcsv', file($file->getRealPath()));
+
+        if (count($data) < 2) {
+            return back()->withErrors(['csv_file' => 'CSV file is empty or missing headers.']);
+        }
+
+        $header = array_map('trim', $data[0]);
+        unset($data[0]);
+
+        foreach ($data as $row) {
+            $rowData = array_combine($header, $row);
+            $zone = ZoneV2::where('name', $rowData['zone'])->first();
+            if (!$zone) continue;
+
+            Device::create([
+                'device_name'    => $rowData['device_name'],
+                'device_type'    => $rowData['device_type'],
+                'zone_id'        => $zone->id,
+                'current_status' => $rowData['current_status'],
+            ]);
+        }
+
+        return redirect()->route('devices.index')->with('success', 'Devices imported successfully.');
     }
 
-    return redirect()->route('devices.index')->with('success', 'Devices imported successfully.');
-}
+    // API: Get buildings for a given site
+    public function getBuildings($siteId)
+    {
+        return Building::where('site_id', $siteId)->get();
+    }
 
+    // API: Get floors for a given building
+    public function getFloors($buildingId)
+    {
+        return Floor::where('building_id', $buildingId)->get();
+    }
+
+    // API: Get zones for a given floor
+    public function getZones($floorId)
+    {
+        return ZoneV2::where('floor_id', $floorId)->get();
+    }
 }

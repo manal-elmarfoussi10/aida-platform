@@ -12,81 +12,86 @@
     </div>
 
     <form action="{{ route('configurations.update', $configuration->id) }}" method="POST"
-          class="bg-[#1e1e1e] p-6 rounded-lg shadow w-full max-w-3xl">
+          class="bg-[#1e1e1e] p-6 rounded-lg shadow w-full max-w-4xl">
         @csrf
         @method('PUT')
 
-        <table class="w-full text-left">
-            <tbody>
-                {{-- Name --}}
-                <tr class="border-b border-black-700">
-                    <td class="py-4 pr-4 align-top font-semibold w-1/4">Name</td>
-                    <td class="py-4">
-                        <input type="text" name="name" value="{{ $configuration->name }}" required
-                               class="w-full px-4 py-2 bg-[#333333] text-white rounded focus:ring-2 focus:ring-green-400 focus:outline-none">
-                    </td>
-                </tr>
+        {{-- Site / Building / Floor / Zone --}}
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            {{-- Site --}}
+            <div>
+                <label class="block mb-1 text-sm font-medium">Site</label>
+                <select id="siteSelect" class="w-full bg-gray-800 text-white rounded px-3 py-2 border border-gray-600">
+                    <option value="">-- Select Site --</option>
+                    @foreach($sites as $site)
+                        <option value="{{ $site->id }}">{{ $site->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-                {{-- Zones --}}
-                <tr class="border-b border-gray-700">
-                    <td class="py-4 pr-4 align-top font-semibold">Zones</td>
-                    <td class="py-4">
-                        <select name="zones[]" multiple required
-                                class="w-full bg-[#333333] text-white rounded px-4 py-2 border border-gray-600"
-                                id="zones-select">
-                            @foreach($zones as $zone)
-                                <option value="{{ $zone->id }}"
-                                    {{ $configuration->zones->contains($zone->id) ? 'selected' : '' }}>
-                                    {{ $zone->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </td>
-                </tr>
+            {{-- Building --}}
+            <div>
+                <label class="block mb-1 text-sm font-medium">Building</label>
+                <select id="buildingSelect" class="w-full bg-gray-800 text-white rounded px-3 py-2 border border-gray-600">
+                    <option value="">-- Select Building --</option>
+                </select>
+            </div>
 
-                {{-- Type --}}
-                <tr class="border-b border-gray-700">
-                    <td class="py-4 pr-4 align-top font-semibold">Type</td>
-                    <td class="py-4">
-                        <div class="flex gap-6">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="type" value="Light" {{ $configuration->type === 'Light' ? 'checked' : '' }}>
-                                <i data-lucide="lightbulb" class="w-5 h-5 text-yellow-400"></i> Light
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="type" value="HVAC" {{ $configuration->type === 'HVAC' ? 'checked' : '' }}>
-                                <i data-lucide="snowflake" class="w-5 h-5 text-cyan-300"></i> HVAC
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="type" value="Shade" {{ $configuration->type === 'Shade' ? 'checked' : '' }}>
-                                <i data-lucide="blinds" class="w-5 h-5 text-blue-400"></i> Shade
-                            </label>
-                        </div>
-                    </td>
-                </tr>
+            {{-- Floor --}}
+            <div>
+                <label class="block mb-1 text-sm font-medium">Floor</label>
+                <select id="floorSelect" class="w-full bg-gray-800 text-white rounded px-3 py-2 border border-gray-600">
+                    <option value="">-- Select Floor --</option>
+                </select>
+            </div>
 
-                {{-- Mode --}}
-                <tr class="border-b border-gray-700">
-                    <td class="py-4 pr-4 align-top font-semibold">Mode</td>
-                    <td class="py-4">
-                        <div class="flex gap-6">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="mode" value="Eco" {{ $configuration->mode === 'Eco' ? 'checked' : '' }}>
-                                <i data-lucide="leaf" class="w-5 h-5 text-green-400"></i> Eco
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="mode" value="Performance" {{ $configuration->mode === 'Performance' ? 'checked' : '' }}>
-                                <i data-lucide="zap" class="w-5 h-5 text-red-500"></i> Performance
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="mode" value="Standard" {{ $configuration->mode === 'Standard' ? 'checked' : '' }}>
-                                <i data-lucide="gauge" class="w-5 h-5 text-blue-400"></i> Standard
-                            </label>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+            {{-- Zone --}}
+            <div>
+                <label class="block mb-1 text-sm font-medium">Zone</label>
+                <select name="zones[]" id="zoneSelect" required
+                        class="w-full bg-gray-800 text-white rounded px-3 py-2 border border-gray-600">
+                    @foreach($zones as $zone)
+                        <option value="{{ $zone->id }}"
+                            {{ $configuration->zones->contains($zone->id) ? 'selected' : '' }}>
+                            {{ $zone->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        {{-- Name --}}
+        <div class="mb-6">
+            <label class="block mb-1 text-sm font-medium">Name</label>
+            <input type="text" name="name" value="{{ $configuration->name }}" required
+                   class="w-full px-4 py-2 bg-[#333333] text-white rounded focus:ring-2 focus:ring-green-400 focus:outline-none">
+        </div>
+
+        {{-- Type --}}
+        <div class="mb-6">
+            <label class="block mb-1 text-sm font-medium">Type</label>
+            <div class="flex gap-6">
+                @foreach(['Light' => 'lightbulb', 'HVAC' => 'snowflake', 'Shade' => 'blinds'] as $value => $icon)
+                    <label class="flex items-center gap-2">
+                        <input type="radio" name="type" value="{{ $value }}" {{ $configuration->type === $value ? 'checked' : '' }}>
+                        <i data-lucide="{{ $icon }}" class="w-5 h-5"></i> {{ $value }}
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Mode --}}
+        <div class="mb-6">
+            <label class="block mb-1 text-sm font-medium">Mode</label>
+            <div class="flex gap-6">
+                @foreach(['Eco' => 'leaf', 'Performance' => 'zap', 'Standard' => 'gauge'] as $value => $icon)
+                    <label class="flex items-center gap-2">
+                        <input type="radio" name="mode" value="{{ $value }}" {{ $configuration->mode === $value ? 'checked' : '' }}>
+                        <i data-lucide="{{ $icon }}" class="w-5 h-5"></i> {{ $value }}
+                    </label>
+                @endforeach
+            </div>
+        </div>
 
         {{-- Submit --}}
         <div class="mt-6">
@@ -98,19 +103,49 @@
     </form>
 </div>
 
-{{-- Lucide icons --}}
+{{-- Lucide --}}
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons();</script>
 
-{{-- TomSelect --}}
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 <script>
-    new TomSelect("#zones-select", {
-        plugins: ['remove_button'],
-        placeholder: 'Select one or more zones...',
-        persist: false,
-        create: false
+    const buildingSelect = document.getElementById('buildingSelect');
+    const floorSelect = document.getElementById('floorSelect');
+    const zoneSelect = document.getElementById('zoneSelect');
+
+    document.getElementById('siteSelect').addEventListener('change', function () {
+        fetch(`/zones-v2/site/${this.value}/buildings`)
+            .then(res => res.json())
+            .then(data => {
+                buildingSelect.innerHTML = `<option value="">-- Select Building --</option>`;
+                floorSelect.innerHTML = `<option value="">-- Select Floor --</option>`;
+                zoneSelect.innerHTML = `<option value="">-- Select Zone --</option>`;
+                data.forEach(building => {
+                    buildingSelect.innerHTML += `<option value="${building.id}">${building.name}</option>`;
+                });
+            });
+    });
+
+    buildingSelect.addEventListener('change', function () {
+        fetch(`/zones-v2/building/${this.value}/floors`)
+            .then(res => res.json())
+            .then(data => {
+                floorSelect.innerHTML = `<option value="">-- Select Floor --</option>`;
+                zoneSelect.innerHTML = `<option value="">-- Select Zone --</option>`;
+                data.forEach(floor => {
+                    floorSelect.innerHTML += `<option value="${floor.id}">${floor.name}</option>`;
+                });
+            });
+    });
+
+    floorSelect.addEventListener('change', function () {
+        fetch(`/zones-v2/floor/${this.value}/zones`)
+            .then(res => res.json())
+            .then(data => {
+                zoneSelect.innerHTML = `<option value="">-- Select Zone --</option>`;
+                data.forEach(zone => {
+                    zoneSelect.innerHTML += `<option value="${zone.id}">${zone.name}</option>`;
+                });
+            });
     });
 </script>
 @endsection

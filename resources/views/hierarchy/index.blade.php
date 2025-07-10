@@ -4,7 +4,7 @@
 @section('content')
 <div class="p-6 text-white">
     {{-- Page Header --}}
-    <h2 class="text-6xl font-bold mb-2">Sites & Hierarchy</h2>
+    <h2 class="text-4xl font-bold mb-2">Sites & Hierarchy</h2>
     <p class="text-gray-400 mb-6">Navigate through the site hierarchy using breadcrumbs and card selection.</p>
 
     {{-- Site and Building Dropdowns --}}
