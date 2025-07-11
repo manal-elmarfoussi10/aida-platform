@@ -1,63 +1,100 @@
 <template>
-    <div class="h-screen bg-black text-white">
-      <h2 class="text-2xl font-bold p-4">Automation Logic</h2>
-      <button @click="addNode" class="bg-green-500 text-white px-4 py-2 rounded ml-4 mb-2">Create New Automation</button>
-      
-      <VueFlow
-        :nodes="nodes"
-        :edges="edges"
-        :fit-view="true"
-        class="h-[80%] bg-neutral-900"
-      >
-        <MiniMap />
-        <Controls />
-        <Background pattern-color="#444" gap="12" />
-      </VueFlow>
+  <div class="h-screen bg-black text-white p-6">
+    <h2 class="text-2xl font-bold mb-4">Automation Logic</h2>
+
+    <!-- Dropdowns -->
+    <div class="mb-4 flex gap-4">
+      <select class="bg-white text-black px-4 py-2 rounded w-40"></select>
+      <select class="bg-white text-black px-4 py-2 rounded w-40"></select>
+      <select class="bg-white text-black px-4 py-2 rounded w-40"></select>
+      <select class="bg-white text-black px-4 py-2 rounded w-40"></select>
     </div>
-  </template>
-  
-  <script setup>
-  import { VueFlow, useVueFlow, MiniMap, Controls, Background } from '@vue-flow/core'
-  
-  const { addNodes, addEdges } = useVueFlow()
-  
-  const nodes = [
-    {
-      id: '1',
-      type: 'default',
-      data: { label: '🔔 Trigger:\nMotion detected in Zone A' },
-      position: { x: 100, y: 200 },
-      style: { background: '#1f7a1f', color: '#fff', padding: '10px' }
+
+    <!-- Zone info -->
+    <div class="mb-4 p-4 rounded bg-neutral-900">
+      <div class="font-bold">Automation Rules for: Lobby</div>
+      <div class="text-sm text-gray-300">Zone Type: public · Area: 5000 sq ft · Capacity: 100 people</div>
+    </div>
+
+    <!-- Button -->
+    <button @click="addNode" class="bg-green-500 text-white px-4 py-2 rounded mb-4">Create New Automation</button>
+
+    <!-- VueFlow -->
+    <VueFlow
+      :nodes="nodes"
+      :edges="edges"
+      :fit-view="true"
+      class="h-[60%] bg-neutral-900 rounded"
+      :node-types="{ custom: CustomNode }"
+    >
+      <Controls />
+      <Background pattern-color="#333" gap="12" />
+    </VueFlow>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { VueFlow, useVueFlow } from '@vue-flow/core'
+import { Controls } from '@vue-flow/controls'
+import { Background } from '@vue-flow/background'
+
+// ✅ Composant node personnalisé
+const CustomNode = {
+  props: ['id', 'data'],
+  template: `
+    <div
+      :style="data.style"
+      class="p-3 rounded text-white text-sm border border-white font-normal"
+      v-html="data.label"
+    />
+  `
+}
+
+const { addNodes, addEdges } = useVueFlow()
+
+const nodes = ref([
+  {
+    id: '1',
+    type: 'custom',
+    data: {
+      label: `<strong>🔔 Trigger:</strong> Motion detected in Lobby`,
+      style: 'background: #14532d; color: #fff;'
     },
-    {
-      id: '2',
-      data: { label: '⏰ Condition:\nAfter 6pm' },
-      position: { x: 400, y: 200 },
-      style: { background: '#eab308', color: '#000', padding: '10px' }
+    position: { x: 100, y: 200 }
+  },
+  {
+    id: '2',
+    type: 'custom',
+    data: {
+      label: `<strong>💠 Condition:</strong> After 6pm`,
+      style: 'background: #a16207; color: #fff;'
     },
-    {
-      id: '3',
-      data: { label: '💡 Action:\nTurn on Lights' },
-      position: { x: 700, y: 100 },
-      style: { background: '#2563eb', color: '#fff', padding: '10px' }
+    position: { x: 400, y: 200 }
+  },
+  {
+    id: '3',
+    type: 'custom',
+    data: {
+      label: `<strong>💡 Action:</strong> Turn on Lights in Lobby`,
+      style: 'background: #1e40af; color: #fff;'
     },
-    {
-      id: '4',
-      data: { label: '🌿 Action:\nSet HVAC to Eco' },
-      position: { x: 700, y: 300 },
-      style: { background: '#2563eb', color: '#fff', padding: '10px' }
+    position: { x: 700, y: 100 }
+  },
+  {
+    id: '4',
+    type: 'custom',
+    data: {
+      label: `<strong>🔒 Action:</strong> Activate Security in Lobby`,
+      style: 'background: #b91c1c; color: #fff;'
     },
-  ]
-  
-  const edges = [
-    { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: '#facc15' } },
-    { id: 'e2-3', source: '2', target: '3', animated: true, style: { stroke: '#3b82f6' } },
-    { id: 'e2-4', source: '2', target: '4', animated: true, style: { stroke: '#3b82f6' } },
-  ]
-  </script>
-  
-  <style scoped>
-  .vue-flow {
-    border: 1px solid #333;
+    position: { x: 700, y: 300 }
   }
-  </style>
+])
+
+const edges = ref([
+  { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: '#facc15', strokeDasharray: '5 5' } },
+  { id: 'e2-3', source: '2', target: '3', animated: true, style: { stroke: '#3b82f6', strokeDasharray: '5 5' } },
+  { id: 'e2-4', source: '2', target: '4', animated: true, style: { stroke: '#ef4444', strokeDasharray: '5 5' } }
+])
+</script>
