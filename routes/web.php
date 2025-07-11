@@ -122,6 +122,7 @@ Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name
 // Automations
 Route::middleware(['auth'])->group(function () {
     Route::get('/automations', [AutomationController::class, 'editor'])->name('automations');
+
 });
 
 // Settings
@@ -182,6 +183,8 @@ Route::get('/test-nmap', function () {
     $output = shell_exec('which nmap && nmap -sn 127.0.0.1/24');
     return nl2br($output ?? 'Nothing returned');
 });
+
+
 
 // Auth routes
 require __DIR__.'/auth.php';

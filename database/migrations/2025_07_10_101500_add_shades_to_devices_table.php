@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('shades')->default(50)->after('rgb_color'); // adjust position if needed
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('devices', function (Blueprint $table) {

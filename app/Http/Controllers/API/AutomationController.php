@@ -49,13 +49,12 @@ class AutomationController extends Controller
      * Display the specified automation.
      */
     public function show($id)
-    {
-        $automation = Automation::findOrFail($id);
+{
+    $automation = Automation::with(['nodes', 'edges'])->findOrFail($id);
 
-        return response()->json([
-            'automation' => $automation
-        ]);
-    }
+    return response()->json($automation);
+}
+
 
     /**
      * Update the specified automation.

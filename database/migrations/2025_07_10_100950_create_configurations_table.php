@@ -14,7 +14,7 @@ return new class extends Migration {
         $table->string('type');
         $table->string('mode')->nullable(); // Eco, Standard, Performance
         $table->timestamps();
-    
+
 });
 
 }

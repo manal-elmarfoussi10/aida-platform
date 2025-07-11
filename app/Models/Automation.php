@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Configuration;
 
 class Automation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'configuration_id'];
+    protected $fillable = ['name', 'configuration_id', 'zonev2_id'];
+
 
     public function nodes()
     {
