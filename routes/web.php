@@ -21,7 +21,8 @@ use App\Http\Controllers\{
     SiteController,
     BuildingController,
     FloorController,
-    NetworkDeviceController
+    NetworkDeviceController,
+    LegacyUserController
 };
 
 // Redirect root to login
@@ -186,6 +187,15 @@ Route::get('/test-nmap', function () {
     $output = shell_exec('which nmap && nmap -sn 127.0.0.1/24');
     return nl2br($output ?? 'Nothing returned');
 });
+
+
+
+////add user
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', LegacyUserController::class);
+});
+
+
 
 // Auth routes
 require __DIR__.'/auth.php';
