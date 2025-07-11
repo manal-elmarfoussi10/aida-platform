@@ -40,7 +40,7 @@ Route::middleware(['auth', 'role:Facility Manager'])->get('/facility', [Dashboar
 Route::middleware(['auth', 'role:User'])->get('/user', [DashboardController::class, 'user']);
 
 Route::get('/dashboard', fn() => redirect(\App\Providers\RouteServiceProvider::redirectTo()))->middleware('auth')->name('dashboard');
-
+Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard.admin');
 // Zones V2
 Route::prefix('zones-v2')->name('zones-v2.')->middleware('auth')->group(function () {
     Route::get('/', [ZoneV2Controller::class, 'index'])->name('index');
@@ -150,10 +150,14 @@ Route::middleware(['auth'])->group(function () {
 
 // Sites
 Route::middleware(['auth'])->group(function () {
+    
+
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
     Route::get('/sites/create', [SiteController::class, 'create'])->name('sites.create');
     Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
-    Route::get('/sites/{site}', [SiteController::class, 'show'])->name('sites.show');
+    Route::get('/sites/{site}/edit', [SiteController::class, 'edit'])->name('sites.edit'); // ✅ MISSING
+    Route::put('/sites/{site}', [SiteController::class, 'update'])->name('sites.update'); // ✅ MISSING
+    Route::delete('/sites/{site}', [SiteController::class, 'destroy'])->name('sites.destroy'); // ✅ MISSING
 });
 
 // Floors

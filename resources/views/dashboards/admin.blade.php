@@ -4,61 +4,61 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6 text-white">
-    <!-- Header + Search -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-2xl font-bold mb-1">Hello admin {{ Auth::user()->name }},</h2>
-            <p class="text-green-400">Attendance Insights</p>
-        </div>
-        <div class="relative w-64">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                <i data-lucide="search" class="w-4 h-4 text-gray-500"></i>
-            </span>
-            <input
-                type="text"
-                placeholder="Search"
-                class="pl-10 pr-4 py-2 w-full rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-400"
-            >
-        </div>
+
+    <!-- Header -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Hello {{ Auth::user()->name }}</h2>
+        <p class="text-green-400">Dashboard / Attendance Insights</p>
     </div>
 
-    <!-- Time + Metrics -->
+    <!-- Site Selection -->
+    <form method="GET" action="{{ route('dashboard.admin') }}" class="mb-4 max-w-xs">
+        <label for="site" class="block mb-1 text-sm">Select Site</label>
+        <select name="site_id" id="site" onchange="this.form.submit()"
+                class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-green-500">
+            @foreach($sites as $s)
+                <option value="{{ $s->id }}" {{ $selectedSite && $selectedSite->id == $s->id ? 'selected' : '' }}>
+                    {{ $s->name }}
+                </option>
+            @endforeach
+        </select>
+    </form>
+
+    <!-- Banner from image_url -->
+    @if($selectedSite && $selectedSite->image_url)
+        <div class="relative overflow-hidden rounded-lg mb-6">
+            <img src="{{ $selectedSite->image_url }}" alt="{{ $selectedSite->name }}" class="w-full h-64 object-cover">
+            <div class="absolute bottom-4 left-4 text-white bg-black bg-opacity-40 px-4 py-2 rounded">
+                <h1 class="text-4xl font-bold">{{ $selectedSite->name }}</h1>
+                <p class="text-xl text-gray-300">{{ $selectedSite->city }}</p>
+            </div>
+        </div>
+    @endif
+
+    <!-- Metrics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-[#1f1f1f] p-4 rounded">
-            <div class="text-2xl flex items-center gap-2">
-                <i data-lucide="sun"></i> <span id="time">{{ now()->format('h:i:s A') }}</span>
-            </div>
-            <p class="text-sm text-gray-400">Realtime Insight</p>
-            <p class="mt-2 text-sm">Today:</p>
-            <p class="text-white font-semibold">{{ now()->format('jS F Y') }}</p>
-            <button class="mt-3 bg-green-500 px-3 py-1 rounded text-sm">Advanced Configuration</button>
+        <div class="bg-[#1f1f1f] p-4 rounded shadow flex flex-col items-start">
+            <i data-lucide="zap" class="mb-2 text-green-400 w-6 h-6"></i>
+            <h2 class="text-2xl font-bold">{{ number_format($energyUsage, 2) }} kWh</h2>
+            <p class="text-sm text-gray-400">Energy Usage</p>
         </div>
-
-        @php
-        $metrics = [
-            ['title' => 'Energy Usage', 'value' => '120 KWH', 'icon' => 'zap'],
-            ['title' => 'Savings Summary', 'value' => '15%', 'subtitle' => 'This Month 15% Energy saving', 'icon' => 'badge-percent'],
-            ['title' => 'Cost Saving', 'value' => '500$', 'subtitle' => '+3% Increase than yesterday', 'icon' => 'wallet', 'textClass' => 'text-red-400'],
-            ['title' => 'Zones List', 'value' => '10', 'icon' => 'search'],
-            ['title' => 'Environmental Impact', 'value' => '100 kg', 'subtitle' => '100 Kg CO2 Reduced', 'icon' => 'leaf'],
-            ['title' => 'Configuration', 'value' => '15', 'icon' => 'settings']
-        ];
-        @endphp
-
-        @foreach($metrics as $metric)
-        <div class="bg-[#1a1a1a] p-4 rounded shadow flex justify-between items-center">
-            <div>
-                <p class="text-sm text-gray-400">{{ $metric['title'] }}</p>
-                <h2 class="text-xl font-bold">{{ $metric['value'] }}</h2>
-                @if(isset($metric['subtitle']))
-                    <p class="text-sm {{ $metric['textClass'] ?? 'text-green-400' }}">{{ $metric['subtitle'] }}</p>
-                @endif
-            </div>
-            <div class="bg-black rounded-full p-2">
-                <i data-lucide="{{ $metric['icon'] }}" class="w-5 h-5 text-green-400"></i>
-            </div>
+        <div class="bg-[#1f1f1f] p-4 rounded shadow flex flex-col items-start">
+            <i data-lucide="percent" class="mb-2 text-green-400 w-6 h-6"></i>
+            <h2 class="text-2xl font-bold">{{ number_format($savingsPercentage) }}%</h2>
+            <p class="text-sm text-gray-400">Savings Summary</p>
+            <p class="text-sm text-green-400">This Month: {{ number_format($savingsPercentage) }}% Energy saving</p>
         </div>
-        @endforeach
+        <div class="bg-[#1f1f1f] p-4 rounded shadow flex flex-col items-start">
+            <i data-lucide="users" class="mb-2 text-green-400 w-6 h-6"></i>
+            <h2 class="text-2xl font-bold">{{ number_format($occupancyRate, 2) }}%</h2>
+            <p class="text-sm text-gray-400">Occupancy Rate</p>
+        </div>
+        <div class="bg-[#1f1f1f] p-4 rounded shadow flex flex-col items-start">
+            <i data-lucide="leaf" class="mb-2 text-green-400 w-6 h-6"></i>
+            <h2 class="text-2xl font-bold">{{ number_format($environmentalImpact) }} kg</h2>
+            <p class="text-sm text-gray-400">Environmental Impact</p>
+            <p class="text-sm text-green-400">{{ number_format($environmentalImpact) }} Kg CO2 Reduced</p>
+        </div>
     </div>
 
     <!-- Charts -->
@@ -137,4 +137,3 @@
     });
 </script>
 @endsection
-

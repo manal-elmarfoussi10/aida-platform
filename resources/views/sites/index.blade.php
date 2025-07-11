@@ -13,7 +13,6 @@
     {{-- Header + Add Button --}}
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold tracking-wide">Sites List</h2>
-
         <a href="{{ route('sites.create') }}"
            class="bg-green-500 text-black px-5 py-2 rounded hover:bg-green-400 shadow-lg transition-all">
             Add New Site
@@ -35,28 +34,44 @@
             <thead class="bg-[#2a2a2a] text-white">
                 <tr>
                     <th class="px-4 py-3 font-semibold">Site Name</th>
+                    <th class="px-4 py-3 font-semibold">City</th>
                     <th class="px-4 py-3 font-semibold">Buildings Count</th>
-                    <th class="px-4 py-3 font-semibold text-center">Action</th>
+                    <th class="px-4 py-3 font-semibold text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($sites as $site)
                 <tr class="border-b border-white hover:bg-[#2a2a2a] transition-all">
                     <td class="px-4 py-3">{{ $site->name }}</td>
+                    <td class="px-4 py-3">{{ $site->city ?? '—' }}</td>
                     <td class="px-4 py-3">{{ $site->buildings_count ?? $site->buildings->count() }}</td>
                     <td class="px-4 py-3 text-center flex justify-center gap-3">
+                        {{-- Edit --}}
+                        <a href="{{ route('sites.edit', $site) }}" class="text-blue-400 hover:text-blue-600">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </a>
+
+                        {{-- Delete --}}
+                        <form action="{{ route('sites.destroy', $site) }}" method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete this site?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-400 hover:text-red-600">
+                                <i data-lucide="trash" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+
+                        {{-- Optional: Show --}}
+                        {{-- 
                         <a href="{{ route('sites.show', $site) }}" class="text-green-400 hover:text-green-600">
                             <i data-lucide="eye" class="w-4 h-4"></i>
                         </a>
-                        <a href="{{ route('sites.create') }}" class="text-blue-400 hover:text-blue-600">
-                            <i data-lucide="plus-square" class="w-4 h-4"></i>
-                        </a>
-                        {{-- Optional: Edit/Delete if needed --}}
+                        --}}
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="3" class="text-center py-6 text-gray-500">No sites available.</td>
+                    <td colspan="4" class="text-center py-6 text-gray-500">No sites available.</td>
                 </tr>
                 @endforelse
             </tbody>

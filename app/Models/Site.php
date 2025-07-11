@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Site extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'city', 'image_url'];
 
     public function buildings()
     {
