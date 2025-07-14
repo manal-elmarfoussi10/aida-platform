@@ -21,6 +21,7 @@
         "vue": "^3.5.17"
     },
     "dependencies": {
+        "@braks/vue-flow": "^0.4.41",
         "@fullcalendar/core": "^6.1.17",
         "@fullcalendar/daygrid": "^6.1.17",
         "@fullcalendar/interaction": "^6.1.17",
@@ -29,10 +30,13 @@
         "@vue-flow/controls": "^1.1.2",
         "@vue-flow/core": "^1.45.0",
         "@vue-flow/minimap": "^1.5.3",
+        "@vue-flow/node-resizer": "^1.5.0",
+        "dagre": "^0.8.5",
         "fullcalendar": "^6.1.17",
         "laravel-echo": "^2.1.6",
         "lucide": "^0.523.0",
         "openai": "^5.8.2",
-        "pusher-js": "^8.4.0"
+        "pusher-js": "^8.4.0",
+        "vue-router": "^4.5.1"
     }
 }

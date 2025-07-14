@@ -1,43 +1,55 @@
-import '@vue-flow/core/dist/style.css';
-import '@vue-flow/core/dist/theme-default.css';
+// 🌐 Styles pour Vue Flow
+import '@vue-flow/core/dist/style.css'
+import '@vue-flow/core/dist/theme-default.css'
 
-// Chargement de bootstrap (CSRF, axios, etc.)
-import './bootstrap';
+// 📦 Bootstrap, axios et Alpine
+import './bootstrap'
+import Alpine from 'alpinejs'
+window.Alpine = Alpine
+Alpine.start()
 
-// Alpine.js (utile pour UI légère)
-import Alpine from 'alpinejs';
-window.Alpine = Alpine;
-Alpine.start();
+import axios from 'axios'
+window.axios = axios
 
-// Axios global (optionnel si tu veux utiliser dans Vue)
-import axios from 'axios';
-window.axios = axios;
+// 🧠 Vue.js
+import { createApp } from 'vue'
 
-// Vue.js setup
-import { createApp } from 'vue';
+// 🧩 Composants personnalisés
+import Editor from './Pages/Automations/Editor.vue'
+import AutomationCreate from './Pages/Automations/AutomationCreate.vue'
+import FlowEditor from './Pages/Automations/FlowEditor.vue'
+import AutomationSelector from './Pages/Automations/AutomationSelector.vue' // ✅ Ajouté ici
 
-// Composant Vue personnalisé
-import Editor from './Pages/Automations/Editor.vue';
+// 🧰 Vue Flow
+import { VueFlow } from '@braks/vue-flow'
 
-// Création de l'app Vue et montage
-const app = createApp({});
-app.component('editor', Editor); // 👈 Nom en kebab dans le HTML : <editor>
-app.mount('#app');
+// 🚀 Création de l'app Vue
+const app = createApp({})
+app.use(VueFlow)
 
-// FullCalendar (optionnel)
-import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+// 📌 Enregistrement des composants globaux
+app.component('editor', Editor)
+app.component('automation-create', AutomationCreate)
+app.component('flow-editor', FlowEditor)
+app.component('automation-selector', AutomationSelector) // ✅ Important !
+
+// 🎯 Montage sur l'élément avec id="app"
+app.mount('#app')
+
+// 📅 FullCalendar (optionnel)
+import { Calendar } from '@fullcalendar/core'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
 
 document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
+    const calendarEl = document.getElementById('calendar')
     if (calendarEl) {
         const calendar = new Calendar(calendarEl, {
             plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
             initialView: 'dayGridMonth',
             events: '/your-events-endpoint',
-        });
-        calendar.render();
+        })
+        calendar.render()
     }
-});
+})

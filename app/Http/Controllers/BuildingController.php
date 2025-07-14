@@ -92,4 +92,17 @@ class BuildingController extends Controller
 
         return redirect()->route('buildings.index')->with('success', 'Building deleted successfully.');
     }
+    public function bySite(Request $request)
+{
+    $siteId = $request->query('site_id');
+
+    if (!$siteId) {
+        return response()->json(['error' => 'Missing site_id'], 400);
+    }
+
+    $buildings = Building::where('site_id', $siteId)->get();
+
+    return response()->json($buildings);
+}
+
 }

@@ -56,4 +56,18 @@ class FloorController extends Controller
         $floor->delete();
         return redirect()->route('floors.index')->with('success', 'Floor deleted successfully.');
     }
+    // Ajoute cette méthode à la fin de FloorController
+public function byBuilding(Request $request)
+{
+    $buildingId = $request->query('building_id');
+
+    if (!$buildingId) {
+        return response()->json(['error' => 'Missing building_id'], 400);
+    }
+
+    $floors = Floor::where('building_id', $buildingId)->get();
+
+    return response()->json($floors);
+}
+
 }

@@ -10,34 +10,43 @@ use App\Models\ZoneV2;
 class AutomationController extends Controller
 {
     /**
-     * Display a listing of the automations (optional filter by zone).
+     * Liste des automatisations par zone (résumé avec label des nœuds)
      */
     public function index(Request $request)
     {
         $zoneId = $request->query('zone');
 
-        $query = Automation::query();
+        $query = Automation::with(['nodes', 'edges'])
+            ->when($zoneId, fn($q) => $q->where('zonev2_id', $zoneId));
 
-        if ($zoneId) {
-            $query->where('zonev2_id', $zoneId);
-        }
+        $automations = $query->get()->map(function ($automation) {
+            $trigger = $automation->nodes->firstWhere('type', 'trigger');
+            $condition = $automation->nodes->firstWhere('type', 'condition');
+            $action = $automation->nodes->firstWhere('type', 'action');
 
-        return response()->json([
-            'automations' => $query->get()
-        ]);
+            return [
+                'id' => $automation->id,
+                'name' => $automation->name,
+                'trigger' => $trigger?->data['label'] ?? null,
+                'condition' => $condition?->data['label'] ?? null,
+                'action' => $action?->data['label'] ?? null,
+            ];
+        });
+
+        return response()->json(['automations' => $automations]);
     }
 
     /**
-     * Store a newly created automation in storage.
+     * Crée une nouvelle automation
      */
     public function store(Request $request)
     {
         $request->validate([
             'zonev2_id' => 'required|exists:zones_v2,id',
-            // Add other validation rules as needed
+            'name' => 'required|string|max:255',
         ]);
 
-        $automation = Automation::create($request->all());
+        $automation = Automation::create($request->only(['zonev2_id', 'name']));
 
         return response()->json([
             'message' => 'Automation created successfully',
@@ -46,24 +55,41 @@ class AutomationController extends Controller
     }
 
     /**
-     * Display the specified automation.
+     * Affiche les détails d’une automation (pour FlowEditor.vue)
      */
     public function show($id)
-{
-    $automation = Automation::with(['nodes', 'edges'])->findOrFail($id);
+    {
+        $automation = Automation::with(['nodes', 'edges'])->findOrFail($id);
 
-    return response()->json($automation);
-}
+        return response()->json([
+            'id' => $automation->id,
+            'name' => $automation->name,
+            'nodes' => $automation->nodes->map(fn ($node) => [
+                'id' => $node->id,
+                'type' => $node->type,
+                'data' => $node->data,
+                'x' => $node->x,
+                'y' => $node->y,
+            ]),
+            // Correct :
+'edges' => $automation->edges->map(function ($edge) {
+    return [
+        'id' => $edge->id,
+        'source' => (string) $edge->source_node_id,
+        'target' => (string) $edge->target_node_id,
+    ];
+}),
 
+        ]);
+    }
 
     /**
-     * Update the specified automation.
+     * Met à jour une automation
      */
     public function update(Request $request, $id)
     {
         $automation = Automation::findOrFail($id);
-
-        $automation->update($request->all());
+        $automation->update($request->only(['name', 'zonev2_id']));
 
         return response()->json([
             'message' => 'Automation updated successfully',
@@ -72,7 +98,7 @@ class AutomationController extends Controller
     }
 
     /**
-     * Remove the specified automation.
+     * Supprime une automation
      */
     public function destroy($id)
     {
@@ -84,9 +110,29 @@ class AutomationController extends Controller
         ]);
     }
 
+    /**
+     * Vue Blade pour éditeur
+     */
     public function editor()
     {
         $zones = ZoneV2::all();
         return view('automations.editor', compact('zones'));
+    }
+
+    /**
+     * Vue pour la création d'une automation
+     */
+    public function create()
+    {
+        return view('automations.create');
+    }
+
+    /**
+     * Automatisations pour une zone donnée
+     */
+    public function byZone($zoneId)
+    {
+        $automations = Automation::where('zonev2_id', $zoneId)->get();
+        return response()->json(['automations' => $automations]);
     }
 }

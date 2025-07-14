@@ -123,6 +123,12 @@ Route::post('/controls/update/{id}', [ControlController::class, 'update'])->name
 // Automations
 Route::middleware(['auth'])->group(function () {
     Route::get('/automations', [AutomationController::class, 'editor'])->name('automations');
+Route::post('/automations', [AutomationController::class, 'store'])->name('automations.store');
+Route::get('/automations/{id}/graph', [AutomationController::class, 'graph']);
+
+Route::get('/automations/create', function () {
+    return view('automations.create');
+})->name('automations.create');
 
 });
 
@@ -188,6 +194,14 @@ Route::get('/test-nmap', function () {
     $output = shell_exec('which nmap && nmap -sn 127.0.0.1/24');
     return nl2br($output ?? 'Nothing returned');
 });
+
+use App\Models\ZoneV2;
+
+Route::get('/automations/create', function () {
+    $zones = ZoneV2::select('id', 'name')->get(); // Récupérer toutes les zones
+    return view('automations.create', compact('zones')); // Passer les zones à la vue
+})->name('automations.create');
+
 
 // Auth routes
 require __DIR__.'/auth.php';

@@ -20,7 +20,7 @@ class Device extends Model
         'dimmer',
         'color_temperature',
         'rgb_color',
-        'shades', 
+        'shades',
     ];
 
     public function zoneV2()

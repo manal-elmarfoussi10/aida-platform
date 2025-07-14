@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Edge extends Model
+{
+    protected $fillable = ['automation_id', 'source_node_id', 'target_node_id'];
+
+    public function automation()
+    {
+        return $this->belongsTo(Automation::class);
+    }
+}

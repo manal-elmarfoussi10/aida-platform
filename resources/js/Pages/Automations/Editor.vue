@@ -1,31 +1,57 @@
 <template>
-  <div class="p-6 bg-black text-white min-h-screen">
-    <h2 class="text-2xl font-bold mb-4">Automation Editor</h2>
+  <div class="p-6 text-white">
+    <h2 class="text-2xl font-bold mb-4">Automation Logic</h2>
 
-    <div class="flex space-x-4 mb-4">
-      <select v-model="selectedSite" @change="fetchBuildings" class="p-2 text-black rounded">
-        <option disabled value="">Select Site</option>
-        <option v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</option>
+    <!-- Filtres : Site, Bâtiment, Étage, Zone -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <select class="bg-gray-800 text-white p-2 rounded" v-model="selectedSite">
+        <option disabled value="">Site</option>
+        <option>Cisco Atlanta</option>
+        <option>MHT New York City</option>
       </select>
 
-      <select v-model="selectedBuilding" @change="fetchFloors" class="p-2 text-black rounded" :disabled="!selectedSite">
-        <option disabled value="">Select Building</option>
-        <option v-for="b in buildings" :key="b.id" :value="b.id">{{ b.name }}</option>
+      <select class="bg-gray-800 text-white p-2 rounded" v-model="selectedBuilding">
+        <option disabled value="">Building</option>
+        <option>Cisco Atlanta Campus</option>
+        <option>Main Tower</option>
       </select>
 
-      <select v-model="selectedFloor" @change="fetchZones" class="p-2 text-black rounded" :disabled="!selectedBuilding">
-        <option disabled value="">Select Floor</option>
-        <option v-for="f in floors" :key="f.id" :value="f.id">{{ f.name }}</option>
+      <select class="bg-gray-800 text-white p-2 rounded" v-model="selectedFloor">
+        <option disabled value="">Floor</option>
+        <option>Ground Floor</option>
       </select>
 
-      <select v-model="selectedZone" class="p-2 text-black rounded" :disabled="!selectedFloor">
-        <option disabled value="">Select Zone</option>
-        <option v-for="z in zones" :key="z.id" :value="z.id">{{ z.name }}</option>
+      <select class="bg-gray-800 text-white p-2 rounded" v-model="selectedZoneId" @change="loadAutomations">
+        <option disabled value="">Zone</option>
+        <option v-for="zone in zones" :key="zone.id" :value="zone.id">
+          {{ zone.name }}
+        </option>
       </select>
     </div>
 
-    <div class="border border-white p-4 rounded">
-      <p>Ici on ajoutera Vue Flow ou autre interface graphique pour créer les règles.</p>
+    <!-- Liste des automatisations -->
+    <div v-if="automations.length" class="space-y-4 mb-6">
+      <div
+        v-for="automation in automations"
+        :key="automation.id"
+        @click="selectAutomation(automation)"
+        class="bg-slate-800 rounded-lg p-4 cursor-pointer hover:ring-2 ring-green-400"
+      >
+        <div class="font-semibold text-lg mb-2">⚙️ Test: {{ automation.name }}</div>
+        <div class="space-y-1 text-sm">
+          <div v-if="automation.trigger" class="text-green-400">🔔 Trigger: {{ automation.trigger }}</div>
+          <div v-if="automation.condition" class="text-yellow-300">🧠 Condition: {{ automation.condition }}</div>
+          <div v-if="automation.action" class="text-blue-400">💡 Action: {{ automation.action }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composant FlowEditor.vue -->
+    <div v-if="selectedAutomation" class="mt-8">
+      <h3 class="text-xl font-semibold mb-2">
+        Graph: {{ selectedAutomation.name }}
+      </h3>
+      <FlowEditor :automationId="selectedAutomation.id" />
     </div>
   </div>
 </template>
@@ -33,69 +59,33 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-
-const sites = ref([])
-const buildings = ref([])
-const floors = ref([])
-const zones = ref([])
+import FlowEditor from './FlowEditor.vue'
 
 const selectedSite = ref('')
 const selectedBuilding = ref('')
 const selectedFloor = ref('')
-const selectedZone = ref('')
+const selectedZoneId = ref(null)
 
-const fetchSites = async () => {
-  try {
-    const res = await axios.get('/api/sites')
-    sites.value = res.data
-  } catch (err) {
-    console.error('Erreur lors de la récupération des sites:', err)
-  }
+const zones = ref([])
+const automations = ref([])
+const selectedAutomation = ref(null)
+
+const loadZones = async () => {
+  const res = await axios.get('/api/zones')
+  zones.value = res.data.zones || []
 }
 
-const fetchBuildings = async () => {
-  selectedBuilding.value = ''
-  selectedFloor.value = ''
-  selectedZone.value = ''
-  buildings.value = []
-  floors.value = []
-  zones.value = []
+const loadAutomations = async () => {
+  selectedAutomation.value = null
+  if (!selectedZoneId.value) return
 
-  try {
-    const res = await axios.get(`/api/buildings?site_id=${selectedSite.value}`)
-    buildings.value = res.data
-  } catch (err) {
-    console.error('Erreur lors de la récupération des bâtiments:', err)
-  }
+  const res = await axios.get(`/api/automations?zone=${selectedZoneId.value}`)
+  automations.value = res.data.automations || []
 }
 
-const fetchFloors = async () => {
-  selectedFloor.value = ''
-  selectedZone.value = ''
-  floors.value = []
-  zones.value = []
-
-  try {
-    const res = await axios.get(`/api/floors?building_id=${selectedBuilding.value}`)
-    floors.value = res.data
-  } catch (err) {
-    console.error('Erreur lors de la récupération des étages:', err)
-  }
+const selectAutomation = (automation) => {
+  selectedAutomation.value = automation
 }
 
-const fetchZones = async () => {
-  selectedZone.value = ''
-  zones.value = []
-
-  try {
-    const res = await axios.get(`/api/zones?floor_id=${selectedFloor.value}`)
-    zones.value = res.data
-  } catch (err) {
-    console.error('Erreur lors de la récupération des zones:', err)
-  }
-}
-
-onMounted(() => {
-  fetchSites()
-})
+onMounted(loadZones)
 </script>

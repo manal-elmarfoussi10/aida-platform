@@ -1,17 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Zone selection -->
-    <div id="zoneForm">
-        <select id="zoneSelect" class="text-black px-4 py-2 rounded">
-            @foreach ($zones as $zone)
-                <option value="{{ $zone->id }}">{{ $zone->name }}</option>
-            @endforeach
-        </select>
+    <div class="flex justify-between items-center mb-4 px-6">
+        <h1 class="text-2xl font-bold text-white">Automation Logic</h1>
+        <a href="{{ route('automations.create') }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+            ➕ Create New Automation
+        </a>
     </div>
 
     <!-- Vue mount point -->
     <div id="app">
-        <editor :initial-zone="{{ $zones->first()->id }}"></editor>
+        <editor></editor>
     </div>
 @endsection
