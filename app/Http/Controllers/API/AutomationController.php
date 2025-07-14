@@ -41,17 +41,40 @@ class AutomationController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'zonev2_id' => 'required|exists:zones_v2,id',
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'zonev2_id' => 'required|exists:zones_v2,id',
+            'nodes' => 'required|array',
+            'edges' => 'required|array',
         ]);
-
-        $automation = Automation::create($request->only(['zonev2_id', 'name']));
-
+    
+        $automation = Automation::create([
+            'name' => $validated['name'],
+            'zonev2_id' => $validated['zonev2_id'],
+        ]);
+    
+        // Save nodes
+        foreach ($validated['nodes'] as $node) {
+            $automation->nodes()->create([
+                'type' => $node['data']['type'] ?? 'custom',
+                'data' => $node['data'],
+                'x' => $node['position']['x'] ?? 0,
+                'y' => $node['position']['y'] ?? 0,
+            ]);
+        }
+    
+        // Save edges
+        foreach ($validated['edges'] as $edge) {
+            $automation->edges()->create([
+                'source_node_id' => $edge['source'],
+                'target_node_id' => $edge['target'],
+            ]);
+        }
+    
         return response()->json([
-            'message' => 'Automation created successfully',
+            'message' => 'Automation created with nodes and edges.',
             'automation' => $automation
-        ], 201);
+        ]);
     }
 
     /**
