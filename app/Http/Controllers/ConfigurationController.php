@@ -14,20 +14,36 @@ class ConfigurationController extends Controller
     public function index(Request $request)
     {
         $sites = Site::all();
-        $selectedSiteId = $request->input('site_id') ?? $sites->first()?->id;
-
-        $buildings = Building::where('site_id', $selectedSiteId)->get();
-        $selectedBuildingId = $request->input('building_id') ?? $buildings->first()?->id;
-
-        $floors = Floor::where('building_id', $selectedBuildingId)->get();
-        $selectedFloorId = $request->input('floor_id') ?? $floors->first()?->id;
-
-        $zoneIds = ZoneV2::where('floor_id', $selectedFloorId)->pluck('id');
-
-        $configs = Configuration::with('zones')
-            ->whereHas('zones', fn($q) => $q->whereIn('id', $zoneIds))
+        $selectedSiteId = $request->input('site_id');
+        $selectedBuildingId = $request->input('building_id');
+        $selectedFloorId = $request->input('floor_id');
+    
+        $buildings = $selectedSiteId
+            ? Building::where('site_id', $selectedSiteId)->get()
+            : collect();
+    
+        $floors = $selectedBuildingId
+            ? Floor::where('building_id', $selectedBuildingId)->get()
+            : collect();
+    
+        $configs = Configuration::with('zones.floor.building.site')
+            ->when($selectedFloorId, function ($query) use ($selectedFloorId) {
+                $query->whereHas('zones', function ($q) use ($selectedFloorId) {
+                    $q->where('floor_id', $selectedFloorId);
+                });
+            })
+            ->when($selectedBuildingId && !$selectedFloorId, function ($query) use ($selectedBuildingId) {
+                $query->whereHas('zones.floor', function ($q) use ($selectedBuildingId) {
+                    $q->where('building_id', $selectedBuildingId);
+                });
+            })
+            ->when($selectedSiteId && !$selectedBuildingId && !$selectedFloorId, function ($query) use ($selectedSiteId) {
+                $query->whereHas('zones.floor.building', function ($q) use ($selectedSiteId) {
+                    $q->where('site_id', $selectedSiteId);
+                });
+            })
             ->get();
-
+    
         return view('configurations.index', compact(
             'configs',
             'sites',

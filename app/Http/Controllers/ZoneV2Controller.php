@@ -17,43 +17,49 @@ use App\Models\AiRequest;
 class ZoneV2Controller extends Controller
 {
     public function index(Request $request)
-    {
-        $sites = Site::with('buildings.floors.zones')->get();
-        $selectedSiteId = $request->input('site_id');
-        $buildings = $selectedSiteId ? Building::where('site_id', $selectedSiteId)->get() : collect();
+{
+    $sites = Site::all();
+    $selectedSiteId = $request->input('site_id');
+    $selectedBuildingId = $request->input('building_id');
+    $selectedFloorId = $request->input('floor_id');
 
-        $selectedBuildingId = $request->input('building_id');
-        $floors = $selectedBuildingId ? Floor::where('building_id', $selectedBuildingId)->get() : collect();
+    // Fetch buildings based on selected site
+    $buildings = $selectedSiteId
+        ? Building::where('site_id', $selectedSiteId)->get()
+        : collect();
 
-        $selectedFloorId = $request->input('floor_id');
+    // Fetch floors based on selected building
+    $floors = $selectedBuildingId
+        ? Floor::where('building_id', $selectedBuildingId)->get()
+        : collect();
 
-        $zones = ZoneV2::when($selectedFloorId, function ($query) use ($selectedFloorId) {
+    // Zones query with layered filtering
+    $zones = ZoneV2::with(['floor.building.site'])
+        ->when($selectedFloorId, function ($query) use ($selectedFloorId) {
             $query->where('floor_id', $selectedFloorId);
-        })->get();
-
-        // Add energy metrics for each site
-        $baselineUsage = 1000; // ← replace with real baseline if needed
-        foreach ($sites as $site) {
-            $zones = $site->buildings->flatMap(function ($building) {
-                return $building->floors->flatMap->zones;
+        })
+        ->when($selectedBuildingId && !$selectedFloorId, function ($query) use ($selectedBuildingId) {
+            $query->whereHas('floor', function ($q) use ($selectedBuildingId) {
+                $q->where('building_id', $selectedBuildingId);
             });
-
-            $totalUsage = $zones->sum(function ($zone) {
-                return floatval($zone->energy_usage ?? 0);
+        })
+        ->when($selectedSiteId && !$selectedBuildingId && !$selectedFloorId, function ($query) use ($selectedSiteId) {
+            $query->whereHas('floor.building', function ($q) use ($selectedSiteId) {
+                $q->where('site_id', $selectedSiteId);
             });
+        })
+        ->get();
 
-            $site->total_energy_kwh = $totalUsage;
-            $site->co2_reduction_kg = round($totalUsage * 0.55, 2);
-            $site->savings_percent = $baselineUsage > 0
-                ? round((($baselineUsage - $totalUsage) / $baselineUsage) * 100, 1)
-                : 0;
-        }
-
-        return view('zones-v2.index', compact(
-            'zones', 'sites', 'buildings', 'floors',
-            'selectedSiteId', 'selectedBuildingId', 'selectedFloorId'
-        ));
-    }
+    return view('zones-v2.index', compact(
+        'zones',
+        'sites',
+        'buildings',
+        'floors',
+        'selectedSiteId',
+        'selectedBuildingId',
+        'selectedFloorId'
+    ));
+}
 
     public function create()
     {

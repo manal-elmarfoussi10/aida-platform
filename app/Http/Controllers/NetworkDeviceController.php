@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\NetworkDevice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class NetworkDeviceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $devices = NetworkDevice::all();
+        $devices = NetworkDevice::all(); // DB devices
+    
+        // Merge live scan if exists
+        if (session('scan_results')) {
+            $devices = $devices->concat(collect(session('scan_results')));
+        }
+    
         return view('network.index', compact('devices'));
     }
 
@@ -22,82 +30,83 @@ class NetworkDeviceController extends Controller
         return redirect()->back();
     }
 
-    public function scan(Request $request)
-    {
-        try {
-            set_time_limit(300); // pour éviter timeout
+    public function createFromQr(Request $request)
+{
+    $raw = $request->input('qr_data');
 
-            $cmd = '"C:\\Program Files (x86)\\Nmap\\nmap.exe" -sn 192.168.1.0/24';
-            $output = shell_exec($cmd);
+    // Attempt to decode
+    $data = json_decode($raw, true);
 
-            if ($output === null) {
-                throw new \Exception("Nmap did not return any output.");
-            }
+    if (!$data || !is_array($data)) {
+        return redirect()->back()->with('status', 'QR code data is not valid JSON.');
+    }
 
-            $lines = explode("\n", $output);
-            $devices = [];
-            $currentDevice = [];
+    // Validate required fields
+    $validator = Validator::make($data, [
+        'device_name' => 'required|string|max:255',
+        'type' => 'required|string|max:255',
+        'serial' => 'required|string|max:255',
+        'mac' => 'required|string|max:255|unique:network_devices,mac_address',
+        'ip' => 'required|ip',
+        'firmware' => 'required|string|max:255',
+    ]);
 
-            foreach ($lines as $line) {
-                $line = trim($line);
+    if ($validator->fails()) {
+        return redirect()->back()->with('status', 'Invalid QR data: ' . implode(', ', $validator->errors()->all()));
+    }
 
-                // IP address
-                if (str_starts_with($line, "Nmap scan report for")) {
-                    if (!empty($currentDevice)) {
-                        $devices[] = $currentDevice;
-                        $currentDevice = [];
-                    }
+    // Save device
+    NetworkDevice::create([
+        'device_name' => $data['device_name'],
+        'type' => $data['type'],
+        'serial_number' => $data['serial'],
+        'mac_address' => $data['mac'],
+        'ip_address' => $data['ip'],
+        'firmware_version' => $data['firmware'],
+        'online_status' => true,
+        'enabled' => true,
+    ]);
 
-                    if (preg_match('/for ([\d\.]+)/', $line, $matches)) {
-                        $currentDevice['ip_address'] = $matches[1];
-                    }
-                }
+    return redirect()->route('network.index')->with('status', '✅ Device created successfully from QR.');
+}
 
-                // Online status
-                if (str_contains($line, 'Host is up')) {
-                    $currentDevice['online_status'] = true;
-                }
+public function scan(Request $request)
+{
+    try {
+        $output = [];
+        exec("arp -a", $output);
 
-                // MAC address + Vendor
-                if (str_contains($line, 'MAC Address:')) {
-                    if (preg_match('/MAC Address: ([0-9A-F:]+) \((.*?)\)/i', $line, $matches)) {
-                        $currentDevice['mac_address'] = $matches[1];
-                        $currentDevice['device_name'] = $matches[2] ?: 'Unknown';
-                    }
-                }
-            }
+        foreach ($output as $line) {
+            // Try to extract IP and MAC
+            if (preg_match('/\(([\d.]+)\)\s+at\s+([a-fA-F0-9:]+)/', $line, $matches)) {
+                $ip = $matches[1];
+                $mac = strtoupper($matches[2]);
 
-            // Ajouter le dernier device s’il existe
-            if (!empty($currentDevice)) {
-                $devices[] = $currentDevice;
-            }
-
-            $inserted = 0;
-            foreach ($devices as $device) {
-                if (!isset($device['mac_address'])) {
-                    continue; // ignorer si pas d'adresse MAC
-                }
-
-                NetworkDevice::updateOrCreate(
-                    ['mac_address' => $device['mac_address']],
+                // Avoid duplicates based on MAC
+                $device = NetworkDevice::firstOrCreate(
+                    ['mac_address' => $mac],
                     [
-                        'device_name' => $device['device_name'] ?? 'Unknown',
+                        'device_name' => 'Discovered ' . Str::random(5),
                         'type' => 'Unknown',
-                        'serial_number' => 'SN-' . substr(str_replace(':', '', $device['mac_address']), -6),
-                        'mac_address' => $device['mac_address'],
-                        'ip_address' => $device['ip_address'] ?? null,
-                        'firmware_version' => 'v1.0',
-                        'online_status' => $device['online_status'] ?? false,
-                        'enabled' => false,
+                        'serial_number' => 'SN-' . Str::random(6),
+                        'ip_address' => $ip,
+                        'firmware_version' => 'v1.0.0',
+                        'online_status' => true,
+                        'enabled' => true,
                     ]
                 );
 
-                $inserted++;
+                // Update IP if it changed
+                $device->ip_address = $ip;
+                $device->online_status = true;
+                $device->save();
             }
-
-            return redirect()->route('network.index')->with('status', "Scan completed: $inserted device(s) updated.");
-        } catch (\Exception $e) {
-            return redirect()->route('network.index')->with('status', 'Scan failed: ' . $e->getMessage());
         }
+
+        return redirect()->route('network.index')->with('status', 'Network scan complete.');
+    } catch (\Exception $e) {
+        return redirect()->route('network.index')->withErrors(['Scan failed: ' . $e->getMessage()]);
     }
+}
+
 }

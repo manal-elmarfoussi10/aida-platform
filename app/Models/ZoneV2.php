@@ -19,6 +19,13 @@ class ZoneV2 extends Model
         'temperature_humidity',
         'energy_usage',
         'floor_id',
+    
+        // Add these fields:
+        'temperature',
+        'shades',
+        'dimmer',
+        'color_temperature',
+        'rgb_color',
     ];
 
     public function devices()

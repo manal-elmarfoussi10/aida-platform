@@ -15,32 +15,51 @@ class DeviceController extends Controller
      * Display a listing of the devices with optional filtering.
      */
     public function index(Request $request)
-    {
-        $sites = Site::all();
-        $selectedSiteId = $request->input('site_id') ?? $sites->first()?->id;
+{
+    $sites = Site::all();
+    $selectedSiteId = $request->input('site_id');
+    $selectedBuildingId = $request->input('building_id');
+    $selectedFloorId = $request->input('floor_id');
 
-        $buildings = Building::where('site_id', $selectedSiteId)->get();
-        $selectedBuildingId = $request->input('building_id') ?? $buildings->first()?->id;
+    // Fetch buildings based on selected site
+    $buildings = $selectedSiteId
+        ? Building::where('site_id', $selectedSiteId)->get()
+        : collect();
 
-        $floors = Floor::where('building_id', $selectedBuildingId)->get();
-        $selectedFloorId = $request->input('floor_id') ?? $floors->first()?->id;
+    // Fetch floors based on selected building
+    $floors = $selectedBuildingId
+        ? Floor::where('building_id', $selectedBuildingId)->get()
+        : collect();
 
-        $devices = Device::with(['zoneV2.floor.building.site'])
-            ->whereHas('zoneV2', function ($query) use ($selectedFloorId) {
-                $query->where('floor_id', $selectedFloorId);
-            })
-            ->get();
+    // Devices query
+    $devices = Device::with(['zoneV2.floor.building.site'])
+        ->when($selectedFloorId, function ($query) use ($selectedFloorId) {
+            $query->whereHas('zoneV2', function ($q) use ($selectedFloorId) {
+                $q->where('floor_id', $selectedFloorId);
+            });
+        })
+        ->when($selectedBuildingId && !$selectedFloorId, function ($query) use ($selectedBuildingId) {
+            $query->whereHas('zoneV2.floor', function ($q) use ($selectedBuildingId) {
+                $q->where('building_id', $selectedBuildingId);
+            });
+        })
+        ->when($selectedSiteId && !$selectedBuildingId && !$selectedFloorId, function ($query) use ($selectedSiteId) {
+            $query->whereHas('zoneV2.floor.building', function ($q) use ($selectedSiteId) {
+                $q->where('site_id', $selectedSiteId);
+            });
+        })
+        ->get();
 
-        return view('devices.index', compact(
-            'devices',
-            'sites',
-            'buildings',
-            'floors',
-            'selectedSiteId',
-            'selectedBuildingId',
-            'selectedFloorId'
-        ));
-    }
+    return view('devices.index', compact(
+        'devices',
+        'sites',
+        'buildings',
+        'floors',
+        'selectedSiteId',
+        'selectedBuildingId',
+        'selectedFloorId'
+    ));
+}
 
     /**
      * Show the form for creating a new device.

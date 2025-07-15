@@ -64,18 +64,8 @@
             <i data-lucide="sliders" class="w-5 h-5 mr-3"></i> Configuration
         </a>
 
-        <a href="{{ route('map-zones.index') }}" class="flex items-center px-4 py-3 rounded {{ isActive('zone-mapping*') }}">
-            <i data-lucide="map-pin" class="w-5 h-5 mr-3"></i> Zone Mapping
-        </a>
         @endif
 
-        <a href="{{ route('schedules.index') }}" class="flex items-center px-4 py-3 rounded {{ isActive('schedules*') }}">
-            <i data-lucide="calendar" class="w-5 h-5 mr-3"></i> Schedules
-        </a>
-
-        <a href="{{ route('floorplan') }}" class="flex items-center px-4 py-3 rounded {{ isActive('floorplan*') }}">
-            <i data-lucide="grid" class="w-5 h-5 mr-3"></i> Floorplan
-        </a>
 
         @if ($role !== 'User')
         <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-3 rounded {{ isActive('reports*') }}">

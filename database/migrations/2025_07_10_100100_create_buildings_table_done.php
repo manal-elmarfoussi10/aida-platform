@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-       // database/migrations/xxxx_create_sites_table.php
-Schema::create('sites', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->timestamps();
-});
+        Schema::create('buildings_done', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('site_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -24,6 +24,6 @@ Schema::create('sites', function (Blueprint $table) {
      */
     public function down(): void
     {
-        Schema::dropIfExists('sites');
+        Schema::dropIfExists('buildings');
     }
 };

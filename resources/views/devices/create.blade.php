@@ -92,9 +92,12 @@
 
     siteSelect.addEventListener('change', function () {
         const siteId = this.value;
-        buildingSelect.innerHTML = '<option>Loading...</option>';
+
+        buildingSelect.innerHTML = '<option value="">Loading...</option>';
         floorSelect.innerHTML = '<option value="">Select Floor</option>';
         zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+
+        if (!siteId) return;
 
         fetch(`/api/buildings/${siteId}`)
             .then(res => res.json())
@@ -108,8 +111,11 @@
 
     buildingSelect.addEventListener('change', function () {
         const buildingId = this.value;
-        floorSelect.innerHTML = '<option>Loading...</option>';
+
+        floorSelect.innerHTML = '<option value="">Loading...</option>';
         zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+
+        if (!buildingId) return;
 
         fetch(`/api/floors/${buildingId}`)
             .then(res => res.json())
@@ -123,7 +129,10 @@
 
     floorSelect.addEventListener('change', function () {
         const floorId = this.value;
-        zoneSelect.innerHTML = '<option>Loading...</option>';
+
+        zoneSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!floorId) return;
 
         fetch(`/api/zones/${floorId}`)
             .then(res => res.json())

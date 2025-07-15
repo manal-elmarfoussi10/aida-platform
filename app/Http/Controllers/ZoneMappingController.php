@@ -4,57 +4,62 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Device;
-use App\Models\Zone;
+use App\Models\ZoneV2;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ZoneMappingController extends Controller
 {
+    /**
+     * Display a listing of the devices with optional zone filtering.
+     */
     public function index(Request $request)
     {
-        $type = $request->input('type');
-        $zone = $request->input('zone');
-
-        $query = Device::with('zone');
-
-        if ($type) {
-            $query->where('device_type', $type);
-        }
-
+        $zone = $request->get('zone');
+        $type = $request->get('type');
+    
+        $query = Device::query();
+    
         if ($zone) {
             $query->whereHas('zone', function ($q) use ($zone) {
                 $q->where('name', $zone);
             });
         }
-
+    
+        if ($type) {
+            $query->where('device_type', $type);
+        }
+    
         $devices = $query->paginate(10);
-        $zones = Zone::all();
-
-        return view('zone-mapping.index', compact('devices', 'zones', 'type', 'zone'));
+        $zones = ZoneV2::all();
+    
+        return view('zone-mapping.index', compact('devices', 'zones', 'zone', 'type'));
     }
 
+    /**
+     * Update the device-zone mapping.
+     */
     public function update(Request $request)
     {
-        foreach ($request->devices as $deviceId => $zoneId) {
-            $device = Device::find($deviceId);
-            if ($device) {
-                $device->zone_id = $zoneId;
-                $device->save();
-            }
-        }
+        $request->validate([
+            'device_id' => 'required|exists:devices,id',
+            'zonev2_id' => 'required|exists:zone_v2,id',
+        ]);
 
-        return redirect()->route('map-zones.index')->with('success', 'Devices updated successfully!');
+        $device = Device::findOrFail($request->input('device_id'));
+        $device->zonev2_id = $request->input('zonev2_id');
+        $device->save();
+
+        return redirect()->back()->with('success', 'Device zone updated successfully.');
     }
 
-    public function export(Request $request)
+    /**
+     * Export device-zone mapping to CSV.
+     */
+    public function export(Request $request): StreamedResponse
     {
-        $type = $request->input('type');
-        $zone = $request->input('zone');
+        $zone = $request->get('zone');
 
-        $query = Device::with('zone');
-
-        if ($type) {
-            $query->where('device_type', $type);
-        }
+        $query = Device::query();
 
         if ($zone) {
             $query->whereHas('zone', function ($q) use ($zone) {
@@ -62,26 +67,29 @@ class ZoneMappingController extends Controller
             });
         }
 
-        $devices = $query->get();
+        $devices = $query->with('zone')->get();
 
-        $response = new StreamedResponse(function () use ($devices) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Device Name', 'Type', 'Zone']);
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="device-zone-mapping.csv"',
+        ];
+
+        $columns = ['Device Name', 'Zone Name'];
+
+        $callback = function () use ($devices, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
 
             foreach ($devices as $device) {
-                fputcsv($handle, [
-                    $device->device_name,
-                    $device->device_type,
-                    $device->zone ? $device->zone->name : 'Unassigned'
+                fputcsv($file, [
+                    $device->name,
+                    $device->zone ? $device->zone->name : '',
                 ]);
             }
 
-            fclose($handle);
-        });
+            fclose($file);
+        };
 
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="devices.csv"');
-
-        return $response;
+        return response()->stream($callback, 200, $headers);
     }
 }

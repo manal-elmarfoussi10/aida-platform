@@ -67,6 +67,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('devices/{device}/toggle-status', [DeviceController::class, 'toggleStatus'])->name('devices.toggleStatus');
     Route::post('devices/{device}/toggle-manual', [DeviceController::class, 'toggleManual'])->name('devices.toggleManual');
     Route::post('/devices/import', [DeviceController::class, 'import'])->name('devices.import');
+// routes/web.php or routes/api.php
+
+Route::get('/api/buildings/{siteId}', function ($siteId) {
+    return App\Models\Building::where('site_id', $siteId)->get();
+});
+
+Route::get('/api/floors/{buildingId}', function ($buildingId) {
+    return App\Models\Floor::where('building_id', $buildingId)->get();
+});
+
+Route::get('/api/zones/{floorId}', function ($floorId) {
+    return App\Models\ZoneV2::where('floor_id', $floorId)->get();
+});
 });
 
 // Schedules
@@ -153,7 +166,12 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/network-devices', [NetworkDeviceController::class, 'index'])->name('network.index');
     Route::post('/network-devices/{id}/toggle', [NetworkDeviceController::class, 'toggle'])->name('network.toggle');
+    
     Route::post('/network/scan', [NetworkDeviceController::class, 'scan'])->name('network.scan');
+    // 🚨 Conflict here:
+    Route::get('/network/scan', [NetworkDeviceController::class, 'scan']);
+
+    Route::post('/network/create-from-qr', [NetworkDeviceController::class, 'createFromQr'])->name('network.createFromQr');
 });
 
 // Sites
