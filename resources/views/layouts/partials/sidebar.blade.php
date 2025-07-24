@@ -39,11 +39,6 @@
         </a>
         @endif
 
-        @if ($role === 'Admin' || $role === 'Facility Manager')
-        <a href="{{ route('automations') }}" class="flex items-center px-4 py-3 rounded {{ isActive('automations*') }}">
-            <i data-lucide="refresh-ccw" class="w-5 h-5 mr-3"></i> Automations
-        </a>
-        @endif
 
         @if (in_array($role, ['Admin', 'Facility Manager']))
         <a href="{{ route('devices.index') }}" class="flex items-center px-4 py-3 rounded {{ isActive('devices*') }}">
