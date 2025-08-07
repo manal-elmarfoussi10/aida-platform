@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: aida-platform
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: Laravel
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:7gF0kd9jGhAxwpzViHmlJ6A8gxL+PlZ00qBG7J9K5nw=  # will explain in a moment
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://aida-platform.onrender.com
+
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: dpg-d2abnv3uibrs73c46r20-a.oregon-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: aida_ff
+      - key: DB_USERNAME
+        value: aida_ff_user
+      - key: DB_PASSWORD
+        value: UkVIEacoTc5eOB5iHW4MZNKkwpAvE2pN
+
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+      - key: NODE_ENV
+        value: production
