@@ -14,7 +14,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'resources/js'),
-      'vue': 'vue/dist/vue.esm-bundler.js', // 👈 IMPORTANT pour activer les <template>
+      'vue': 'vue/dist/vue.esm-bundler.js', // 👈 Required for <template>
+      'crypto': 'crypto-browserify', // ✅ Added fallback for crypto to fix Render build
     },
   },
 });

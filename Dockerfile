@@ -30,9 +30,10 @@ WORKDIR /var/www
 COPY . .
 
 # 6. Install PHP and NPM dependencies
-RUN composer install --no-dev --optimize-autoloader \
-    && npm install \
-    && npm run build
+# Instead of chaining them, separate like this:
+    RUN composer install --no-dev --optimize-autoloader
+    RUN npm install
+    RUN npm run build
 
 # 7. Set permissions
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www

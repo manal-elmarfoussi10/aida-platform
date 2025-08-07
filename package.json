@@ -31,6 +31,7 @@
         "@vue-flow/core": "^1.45.0",
         "@vue-flow/minimap": "^1.5.3",
         "@vue-flow/node-resizer": "^1.5.0",
+        "crypto-browserify": "^3.12.1",
         "dagre": "^0.8.5",
         "fullcalendar": "^6.1.17",
         "laravel-echo": "^2.1.6",
