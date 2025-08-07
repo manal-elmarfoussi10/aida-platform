@@ -4,6 +4,7 @@ FROM php:8.2-fpm
 
 # 2. Install system dependencies
 # 2. Install system dependencies
+# 2. Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpng-dev \
@@ -17,9 +18,8 @@ RUN apt-get update && apt-get install -y \
     git \
     nano \
     libpq-dev \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
-    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs
 
 # 3. Install Composer
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
